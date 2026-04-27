@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PSC | Production Dashboard</title>
+<title>Mighty Production Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -473,11 +473,22 @@ function parseNum(v) {
   return isNaN(n) ? null : n;
 }
 
-// Normalize percentage: if value <= 1.5, treat as decimal (0.9 = 90%); else as already-percentage (90 = 90%)
+// Normalize a percentage value into the 0–100 range.
+// Rule:
+//  • If the original cell text contains "%" → strip "%" and use the number directly (e.g. "37.93%" → 37.93)
+//  • If the original cell text is a pure decimal in [0,1] without "%" → multiply by 100 (e.g. "0.9028" → 90.28)
+//  • Otherwise treat the number as already a percentage (e.g. "37.93" → 37.93)
+// This avoids the bug where 1.14% was being misread as 100% because 1.14 fell under the "decimal" rule.
 function pct(v) {
-  const n = parseNum(v);
-  if (n === null) return null;
-  return n <= 1.5 ? Math.round(n * 1000) / 10 : Math.round(n * 10) / 10;
+  if (v === null || v === undefined || v === '') return null;
+  const raw = String(v).trim();
+  const hasPctSign = raw.includes('%');
+  const cleaned = raw.replace('%','').replace(/,/g,'');
+  const n = parseFloat(cleaned);
+  if (isNaN(n)) return null;
+  if (hasPctSign) return Math.round(n * 100) / 100;        // "37.93%" → 37.93
+  if (n >= 0 && n <= 1) return Math.round(n * 10000) / 100; // "0.9028" → 90.28
+  return Math.round(n * 100) / 100;                         // "37.93" → 37.93
 }
 
 // Find the data starting row in a sheet (skips title rows)
@@ -752,7 +763,6 @@ function render(data) {
           <svg class="gauge-svg" viewBox="0 0 180 100">
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#e2e5ea" stroke-width="14" stroke-linecap="round"/>
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#g1)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deliveredCircumference}" stroke-dashoffset="${delDashOffset}"/>
-            <circle cx="90" cy="90" r="6" fill="#1a1d23"/>
             <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00c271"/><stop offset="100%" stop-color="#00b8d4"/></linearGradient></defs>
           </svg>
           <div class="gauge-center-val"><div class="gauge-number green">${deliveredPct !== null ? Math.round(deliveredPct) : '—'}<span style="font-size:20px;font-weight:800">%</span></div></div>
@@ -767,7 +777,6 @@ function render(data) {
           <svg class="gauge-svg" viewBox="0 0 180 100">
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#e2e5ea" stroke-width="14" stroke-linecap="round"/>
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#g2)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deliveredCircumference}" stroke-dashoffset="${projDashOffset}"/>
-            <circle cx="90" cy="90" r="6" fill="#1a1d23"/>
             <defs><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f5c400"/><stop offset="100%" stop-color="#f58220"/></linearGradient></defs>
           </svg>
           <div class="gauge-center-val"><div class="gauge-number orange">${projectedPct !== null ? Math.round(projectedPct) : '—'}<span style="font-size:20px;font-weight:800">%</span></div></div>
@@ -782,7 +791,6 @@ function render(data) {
           <svg class="gauge-svg" viewBox="0 0 180 100">
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#e2e5ea" stroke-width="14" stroke-linecap="round"/>
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#g3)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deliveredCircumference}" stroke-dashoffset="${tasksDashOffset}"/>
-            <circle cx="90" cy="90" r="6" fill="#1a1d23"/>
             <defs><linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3a7bd5"/><stop offset="100%" stop-color="#00b8d4"/></linearGradient></defs>
           </svg>
           <div class="gauge-center-val"><div class="gauge-number blue" style="font-size:34px">${fmtNum(tasksDone)}<span style="font-size:15px;font-weight:800">/${fmtNum(tasksTotal)}</span></div></div>
