@@ -55,7 +55,7 @@
 
   /* PROJECT HEADER */
   .project-header { display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 28px; border-bottom: 2.5px solid var(--text); margin-bottom: 36px; }
-  .project-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+  .project-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
   .project-title { font-size: 54px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
   .project-title .highlight { background: var(--grad-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .project-meta { margin-top: 12px; display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
@@ -85,7 +85,7 @@
   .gauge-label { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; align-self: flex-start; }
   .gauge-svg-wrap { position: relative; width: 180px; height: 100px; margin-bottom: 8px; }
   .gauge-svg { width: 180px; height: 100px; overflow: visible; }
-  .gauge-center-val { position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); text-align: center; white-space: nowrap; }
+  .gauge-center-val { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); text-align: center; white-space: nowrap; line-height: 1; }
   .gauge-number { font-size: 44px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
   .gauge-number.green { color: var(--green); }
   .gauge-number.orange { color: var(--orange); }
@@ -793,7 +793,7 @@ function render(data) {
             <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#g3)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deliveredCircumference}" stroke-dashoffset="${tasksDashOffset}"/>
             <defs><linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3a7bd5"/><stop offset="100%" stop-color="#00b8d4"/></linearGradient></defs>
           </svg>
-          <div class="gauge-center-val"><div class="gauge-number blue" style="font-size:34px">${fmtNum(tasksDone)}<span style="font-size:15px;font-weight:800">/${fmtNum(tasksTotal)}</span></div></div>
+          <div class="gauge-center-val"><div class="gauge-number blue" style="font-size:38px;letter-spacing:-2.5px">${fmtNum(tasksDone)}<span style="font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0;margin-left:4px;">of ${fmtNum(tasksTotal)}</span></div></div>
         </div>
         <div class="gauge-sub">${tasksRemaining !== null ? fmtNum(tasksRemaining) + ' tasks remaining' : '—'}</div>
         <div class="gauge-badge neutral">Delivery: ${escapeHtml(finalDelivery)}</div>
