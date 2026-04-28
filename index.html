@@ -664,39 +664,57 @@ function parseGeneral(rows) {
 // ════════════════════════════════════════════════════════════
 function parseDepts(rows) {
   if (!rows) return [];
-  // Find header row: must contain a column with "deptid" or "dept_id" and one with "delivered_pct"
+
+  // Normalize header text aggressively: lowercase, strip non-alphanumerics.
+  // "DeptID" → "deptid", "dept_ID" → "deptid", "Dept Name" → "deptname", "delivered_pct" → "deliveredpct"
+  const normKey = s => (s||'').toString().toLowerCase().replace(/[^a-z0-9]/g,'');
+
+  // Find header row by looking for normalized "deptid" + something starting with "delivered"
   let headerIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i].map(c => (c||'').toString().toLowerCase().trim());
-    const hasDeptId = row.some(c => c === 'deptid' || c === 'dept_id' || c === 'id');
-    const hasDelivered = row.some(c => c.includes('delivered'));
-    if (hasDeptId && hasDelivered) { headerIdx = i; break; }
+  let map = {};
+  for (let i = 0; i < Math.min(rows.length, 8); i++) {
+    const row = rows[i] || [];
+    const normalized = row.map(normKey);
+    const hasDeptId = normalized.some(c => c === 'deptid' || c === 'id');
+    const hasDelivered = normalized.some(c => c.startsWith('delivered'));
+    if (hasDeptId && hasDelivered) {
+      headerIdx = i;
+      row.forEach((h, idx) => {
+        const k = normKey(h);
+        if (k && map[k] === undefined) map[k] = idx;
+      });
+      break;
+    }
   }
+
   if (headerIdx < 0) {
-    console.warn('[DEPT_DATA] header row not found. Looking for "DeptID" + "delivered_pct" columns.');
+    console.warn('[DEPT_DATA] header row not found. Need DeptID + delivered_pct columns.');
     return [];
   }
-  const map = headerMap(rows[headerIdx]);
-  console.log('[DEPT_DATA] header found at row', headerIdx, 'cols:', Object.keys(map));
+  console.log('[DEPT_DATA] header at row', headerIdx, 'normalized cols:', Object.keys(map));
 
-  // Find dept name column flexibly
-  const nameKey = ['dept','dept_name','department','name'].find(k => map[k] !== undefined);
-  const idKey = ['deptid','dept_id','id'].find(k => map[k] !== undefined);
+  const idIdx = map['deptid'] !== undefined ? map['deptid'] : map['id'];
+  const nameIdx = ['dept','deptname','department','name'].map(k => map[k]).find(v => v !== undefined);
+  const delIdx = ['deliveredpct','delivered'].map(k => map[k]).find(v => v !== undefined);
+  const projIdx = ['projectedpct','projected'].map(k => map[k]).find(v => v !== undefined);
+  const statusIdx = map['status'];
+  console.log('[DEPT_DATA] using cols:', { id: idIdx, name: nameIdx, del: delIdx, proj: projIdx, status: statusIdx });
 
   const depts = [];
   for (let i = headerIdx + 1; i < rows.length; i++) {
     const r = rows[i];
-    const deptId = (idKey ? (r[map[idKey]] || '') : '').toString().trim();
-    const deptName = (nameKey ? (r[map[nameKey]] || '') : '').toString().trim();
+    if (!r) continue;
+    const deptId = (idIdx !== undefined ? (r[idIdx] || '') : '').toString().trim();
+    const deptName = (nameIdx !== undefined ? (r[nameIdx] || '') : '').toString().trim();
 
     if (!deptId) continue;
     const lowerId = deptId.toLowerCase();
     if (lowerId.includes('average') || lowerId.includes('total') || lowerId === 'project') continue;
     if (!deptName) continue;
 
-    const del = pct(getCell(r, map, 'delivered_pct'));
-    const proj = pct(getCell(r, map, 'projected_pct'));
-    const status = (getCell(r, map, 'status') || '').toString().toLowerCase().trim();
+    const del = delIdx !== undefined ? pct(r[delIdx]) : null;
+    const proj = projIdx !== undefined ? pct(r[projIdx]) : null;
+    const status = statusIdx !== undefined ? (r[statusIdx] || '').toString().toLowerCase().trim() : '';
 
     depts.push({
       id: deptId,
@@ -715,18 +733,32 @@ function parseDepts(rows) {
 // ════════════════════════════════════════════════════════════
 function parseEpisodes(rows, depts) {
   if (!rows) return [];
-  // Find header row: must contain "episode" column
+
+  const normKey = s => (s||'').toString().toLowerCase().replace(/[^a-z0-9]/g,'');
+
+  // Find header row containing normalized "episode"
   let headerIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i].map(c => (c||'').toString().toLowerCase().trim());
-    if (row.includes('episode')) { headerIdx = i; break; }
+  let map = {};
+  for (let i = 0; i < Math.min(rows.length, 8); i++) {
+    const row = rows[i] || [];
+    const normalized = row.map(normKey);
+    if (normalized.includes('episode')) {
+      headerIdx = i;
+      row.forEach((h, idx) => {
+        const k = normKey(h);
+        if (k && map[k] === undefined) map[k] = idx;
+      });
+      // Also keep the legacy lowercase-with-underscores keys for backwards compat with getCell()
+      const legacy = headerMap(row);
+      Object.keys(legacy).forEach(k => { if (map[k] === undefined) map[k] = legacy[k]; });
+      break;
+    }
   }
   if (headerIdx < 0) {
     console.warn('[EPISODE_DATA] header row not found. Looking for "episode" column.');
     return [];
   }
-  const map = headerMap(rows[headerIdx]);
-  console.log('[EPISODE_DATA] header found at row', headerIdx, 'cols:', Object.keys(map));
+  console.log('[EPISODE_DATA] header at row', headerIdx, 'cols:', Object.keys(map));
 
   const episodes = [];
   for (let i = headerIdx + 1; i < rows.length; i++) {
@@ -769,44 +801,73 @@ function parseEpisodes(rows, depts) {
 // ════════════════════════════════════════════════════════════
 function parseSchedule(rows) {
   if (!rows) return [];
-  // Find header row: must contain "episode" + "process" + "start_date"
+
+  // Normalize header text to a comparison key: lowercase, strip non-alphanumerics.
+  // Examples: "Start Date" → "startdate", "DueDate" → "duedate", "Take 1" → "take1"
+  const normKey = s => (s||'').toString().toLowerCase().replace(/[^a-z0-9]/g,'');
+
+  // Find a header row by looking for ANY row that contains a date-related column
+  // (start, due) AND something that smells like episode/process columns.
   let headerIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i].map(c => (c||'').toString().toLowerCase().trim());
-    if (row.includes('episode') && row.includes('process') && row.some(c => c.includes('start'))) {
-      headerIdx = i; break;
+  let map = {};
+  for (let i = 0; i < Math.min(rows.length, 6); i++) {
+    const row = rows[i] || [];
+    const normalizedRow = row.map(normKey);
+    const hasStart = normalizedRow.some(c => c === 'startdate' || c === 'start');
+    const hasDue = normalizedRow.some(c => c === 'duedate' || c === 'due');
+    if (hasStart && hasDue) {
+      headerIdx = i;
+      // Build map of normalized-key → column index
+      row.forEach((h, idx) => {
+        const k = normKey(h);
+        if (k) map[k] = idx;
+      });
+      break;
     }
   }
+
   if (headerIdx < 0) {
-    console.warn('[SCHEDULE_DATA] header row not found. Need columns: episode, process, start_date.');
+    console.warn('[SCHEDULE_DATA] header row not found. Need columns containing "Start Date" + "Due Date" or similar.');
     return [];
   }
-  const map = headerMap(rows[headerIdx]);
-  console.log('[SCHEDULE_DATA] header at row', headerIdx, 'cols:', Object.keys(map));
 
-  // Detect take columns (take1, take2, take 1, etc.)
+  console.log('[SCHEDULE_DATA] header at row', headerIdx, 'normalized cols:', Object.keys(map));
+
+  // Detect column positions
+  const startIdx = map['startdate'] !== undefined ? map['startdate'] : map['start'];
+  const dueIdx   = map['duedate']   !== undefined ? map['duedate']   : map['due'];
+
+  // Episode / process columns:
+  //  - Look for explicit "episode" / "process" headers
+  //  - Otherwise fall back to columns A and B (indices 0 and 1)
+  let epIdx = map['episode'] !== undefined ? map['episode'] : 0;
+  let procIdx = map['process'] !== undefined ? map['process'] : 1;
+  console.log('[SCHEDULE_DATA] using columns:', { episode: epIdx, process: procIdx, start: startIdx, due: dueIdx });
+
+  // Detect take columns by normalized key like "take1", "take2", ...
   const takeCols = [];
   Object.keys(map).forEach(key => {
-    const m = key.match(/^take\s*(\d+)$/i);
-    if (m) takeCols.push({ key: key, num: parseInt(m[1], 10) });
+    const m = key.match(/^take(\d+)$/);
+    if (m) takeCols.push({ idx: map[key], num: parseInt(m[1], 10) });
   });
   takeCols.sort((a,b) => a.num - b.num);
-  console.log('[SCHEDULE_DATA] detected take columns:', takeCols.map(t => t.key));
+  console.log('[SCHEDULE_DATA] take columns:', takeCols);
 
   const schedule = [];
   for (let i = headerIdx + 1; i < rows.length; i++) {
     const r = rows[i];
-    const ep = (getCell(r, map, 'episode') || '').toString().trim();
-    const proc = (getCell(r, map, 'process') || '').toString().trim();
+    if (!r) continue;
+    const ep = (r[epIdx] || '').toString().trim();
+    const proc = (r[procIdx] || '').toString().trim();
     if (!ep || !proc) continue;
 
-    const startDate = parseDate(getCell(r, map, 'start_date'));
-    const dueDate = parseDate(getCell(r, map, 'due_date'));
+    const startDate = parseDate(r[startIdx]);
+    const dueDate = parseDate(r[dueIdx]);
     if (!startDate || !dueDate) continue;
 
     const takes = [];
     takeCols.forEach(tc => {
-      const d = parseDate(r[map[tc.key]]);
+      const d = parseDate(r[tc.idx]);
       if (d) takes.push({ num: tc.num, date: d });
     });
 
