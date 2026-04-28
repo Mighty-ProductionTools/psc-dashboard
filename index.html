@@ -316,9 +316,11 @@
   /* Take diamond markers */
   .gantt-take {
     position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg);
-    width: 12px; height: 12px;
-    background: #fff; border: 2px solid var(--text);
-    z-index: 3; cursor: pointer;
+    width: 14px; height: 14px;
+    background: #fff;
+    border: 2.5px solid var(--text);
+    box-shadow: 0 0 0 2px #fff, 0 2px 4px rgba(0,0,0,0.25);
+    z-index: 6; cursor: pointer;
     transition: transform 0.15s;
   }
   .gantt-take:hover { transform: translate(-50%, -50%) rotate(45deg) scale(1.3); }
@@ -1271,7 +1273,7 @@ function renderSchedule(schedule) {
         const tDays = diffDays(weekStart, t.date);
         const tPct = (tDays / totalDays) * 100;
         return `
-          <div class="gantt-take" style="left:${tPct}%;background:${color};border-color:${color};">
+          <div class="gantt-take" style="left:${tPct}%;border-color:${color};">
             <div class="gantt-take-tooltip" style="transform:translateX(-50%) rotate(-45deg);">Take ${t.num} — ${fmtFullDate(t.date)}</div>
           </div>`;
       }).join('');
