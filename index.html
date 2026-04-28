@@ -381,6 +381,10 @@
 
 <main id="main-content">
   <div id="skeleton-loader">
+    <div style="text-align:center;padding:24px 20px 32px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:10px;">Loading your dashboard</div>
+      <div style="font-size:14px;font-weight:600;color:var(--muted);">This may take up to 2 minutes — pulling the latest data from production ✨</div>
+    </div>
     <div class="skeleton skel-block skel-header"></div>
     <div class="skel-gauges">
       <div class="skeleton skel-gauge"></div>
@@ -870,7 +874,7 @@ let __DATA__ = null;
 
 function render(data) {
   __DATA__ = data;
-  const { general, depts, episodes, history } = data;
+  const { general, depts, episodes, history, schedule } = data;
 
   const projectName = general.project_name || 'Production';
   const weekCurrent = parseNum(general.week_current) || 0;
