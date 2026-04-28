@@ -248,6 +248,105 @@
   .skel-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
   .skel-card { height: 180px; }
 
+
+  /* ─── GANTT / SCHEDULE ─── */
+  .schedule-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 26px 30px; margin-bottom: 28px; overflow: hidden; }
+  .schedule-controls { display: flex; gap: 10px; align-items: center; }
+  .schedule-toggle-btn { font-size: 11px; font-weight: 700; padding: 6px 14px; border-radius: 8px; background: var(--surface2); color: var(--muted); border: none; cursor: pointer; font-family: 'Nunito Sans', sans-serif; letter-spacing: 0.5px; transition: all 0.15s; }
+  .schedule-toggle-btn:hover { background: var(--text); color: #fff; }
+
+  .gantt-wrap { position: relative; overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; }
+  .gantt-wrap::-webkit-scrollbar { height: 8px; }
+  .gantt-wrap::-webkit-scrollbar-track { background: var(--surface2); border-radius: 4px; }
+  .gantt-wrap::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 4px; opacity: 0.5; }
+
+  .gantt-grid { display: grid; min-width: 100%; position: relative; }
+
+  /* Week headers */
+  .gantt-weeks-row { display: grid; border-bottom: 1.5px solid var(--border); padding-bottom: 8px; margin-bottom: 4px; position: sticky; top: 0; background: var(--surface); z-index: 5; }
+  .gantt-week-cell { text-align: center; font-size: 9px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); padding: 4px 2px; border-left: 1px solid var(--border); }
+  .gantt-week-cell:first-child { border-left: none; }
+  .gantt-week-num { font-size: 11px; color: var(--text); margin-bottom: 2px; }
+  .gantt-week-date { font-size: 9px; color: var(--muted); font-weight: 600; }
+
+  /* Episode header (collapsible) */
+  .gantt-episode-header { display: flex; align-items: center; gap: 10px; padding: 12px 4px 12px 0; cursor: pointer; border-top: 1px solid var(--border); user-select: none; }
+  .gantt-episode-header:hover { background: var(--surface2); }
+  .gantt-episode-header:first-of-type { border-top: none; }
+  .gantt-chevron { width: 16px; height: 16px; transition: transform 0.2s; flex-shrink: 0; color: var(--muted); }
+  .gantt-episode-header.collapsed .gantt-chevron { transform: rotate(-90deg); }
+  .gantt-episode-name { font-size: 14px; font-weight: 800; color: var(--text); }
+  .gantt-episode-meta { font-size: 11px; font-weight: 600; color: var(--muted); margin-left: auto; }
+
+  .gantt-episode-rows { transition: max-height 0.3s ease, opacity 0.2s ease; overflow: hidden; }
+  .gantt-episode-rows.collapsed { max-height: 0 !important; opacity: 0; }
+
+  /* Process row */
+  .gantt-row { display: grid; align-items: center; padding: 4px 0; min-height: 36px; }
+  .gantt-process-label { font-size: 12px; font-weight: 700; color: var(--text); padding: 0 12px 0 28px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gantt-track { position: relative; height: 24px; background: rgba(0,0,0,0.02); border-radius: 6px; }
+  .gantt-bar {
+    position: absolute; top: 4px; bottom: 4px;
+    border-radius: 4px; transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .gantt-bar:hover { transform: scale(1.02); cursor: pointer; }
+  .gantt-bar-progress {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.18);
+  }
+
+  /* Today line */
+  .gantt-today-line {
+    position: absolute; top: 0; bottom: 0;
+    width: 2px; background: var(--red);
+    z-index: 4; pointer-events: none;
+  }
+  .gantt-today-line::before {
+    content: 'TODAY';
+    position: absolute; top: -20px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px; font-weight: 800; letter-spacing: 1.5px;
+    color: var(--red); white-space: nowrap;
+    background: var(--surface); padding: 1px 6px; border-radius: 4px;
+    border: 1px solid rgba(232,50,74,0.3);
+  }
+
+  /* Take diamond markers */
+  .gantt-take {
+    position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(45deg);
+    width: 12px; height: 12px;
+    background: #fff; border: 2px solid var(--text);
+    z-index: 3; cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .gantt-take:hover { transform: translate(-50%, -50%) rotate(45deg) scale(1.3); }
+  .gantt-take-tooltip {
+    position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+    padding: 5px 9px; border-radius: 6px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity 0.15s;
+    z-index: 10;
+  }
+  .gantt-take:hover .gantt-take-tooltip { opacity: 1; }
+
+  /* Bar tooltip */
+  .gantt-bar-tooltip {
+    position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+    padding: 6px 10px; border-radius: 6px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity 0.15s;
+    z-index: 10;
+  }
+  .gantt-bar:hover .gantt-bar-tooltip { opacity: 1; }
+
+  .gantt-empty {
+    text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px;
+  }
+
 </style>
 </head>
 <body>
@@ -378,6 +477,7 @@ const CONFIG = {
   DEPT_CSV:       "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=583187388&single=true&output=csv",
   EPISODE_CSV:    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=60272406&single=true&output=csv",
   HISTORY_CSV:    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=520858740&single=true&output=csv",
+  SCHEDULE_CSV:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=329363891&single=true&output=csv",
 
   // Auto-refresh every N minutes (set to 0 to disable)
   REFRESH_MINUTES: 5,
@@ -663,6 +763,73 @@ function parseEpisodes(rows, depts) {
 // ════════════════════════════════════════════════════════════
 // PARSE WEEKLY_HISTORY
 // ════════════════════════════════════════════════════════════
+function parseSchedule(rows) {
+  if (!rows) return [];
+  // Find header row: must contain "episode" + "process" + "start_date"
+  let headerIdx = -1;
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i].map(c => (c||'').toString().toLowerCase().trim());
+    if (row.includes('episode') && row.includes('process') && row.some(c => c.includes('start'))) {
+      headerIdx = i; break;
+    }
+  }
+  if (headerIdx < 0) {
+    console.warn('[SCHEDULE_DATA] header row not found. Need columns: episode, process, start_date.');
+    return [];
+  }
+  const map = headerMap(rows[headerIdx]);
+  console.log('[SCHEDULE_DATA] header at row', headerIdx, 'cols:', Object.keys(map));
+
+  // Detect take columns (take1, take2, take 1, etc.)
+  const takeCols = [];
+  Object.keys(map).forEach(key => {
+    const m = key.match(/^take\s*(\d+)$/i);
+    if (m) takeCols.push({ key: key, num: parseInt(m[1], 10) });
+  });
+  takeCols.sort((a,b) => a.num - b.num);
+  console.log('[SCHEDULE_DATA] detected take columns:', takeCols.map(t => t.key));
+
+  const schedule = [];
+  for (let i = headerIdx + 1; i < rows.length; i++) {
+    const r = rows[i];
+    const ep = (getCell(r, map, 'episode') || '').toString().trim();
+    const proc = (getCell(r, map, 'process') || '').toString().trim();
+    if (!ep || !proc) continue;
+
+    const startDate = parseDate(getCell(r, map, 'start_date'));
+    const dueDate = parseDate(getCell(r, map, 'due_date'));
+    if (!startDate || !dueDate) continue;
+
+    const takes = [];
+    takeCols.forEach(tc => {
+      const d = parseDate(r[map[tc.key]]);
+      if (d) takes.push({ num: tc.num, date: d });
+    });
+
+    schedule.push({ episode: ep, process: proc, start: startDate, due: dueDate, takes: takes });
+  }
+  console.log('[SCHEDULE_DATA] parsed', schedule.length, 'rows');
+  return schedule;
+}
+
+// Robust date parser. Handles: "4/20/2026", "2026-04-20", "Apr 20, 2026", Excel serials.
+function parseDate(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  // Try ISO and US formats
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) return d;
+  // Try M/D/YYYY explicitly
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (m) {
+    let yr = parseInt(m[3], 10);
+    if (yr < 100) yr += 2000;
+    return new Date(yr, parseInt(m[1],10)-1, parseInt(m[2],10));
+  }
+  return null;
+}
+
 function parseHistory(rows) {
   if (!rows) return [];
   const headerIdx = findHeaderRow(rows, ['week','delivered_pct']);
@@ -816,6 +983,8 @@ function render(data) {
       <div class="bar-labels"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
     </div>
 
+    ${renderSchedule(schedule)}
+
     <!-- CHART -->
     <div class="chart-card fade-up">
       <div class="section-header">
@@ -905,6 +1074,223 @@ function renderEpisodeRows(episodes) {
         <span class="ep-num ${diffCls}" style="text-align:right">${diffStr}</span>
       </div>`;
   }).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+// SCHEDULE / GANTT
+// ════════════════════════════════════════════════════════════
+
+// Color mapping by process name (case-insensitive substring match)
+const PROCESS_COLORS = [
+  { match: /story\s*board|^stb$/i,           color: '#7ed957' }, // light green
+  { match: /^art|^clr|color/i,                color: '#f58220' }, // orange
+  { match: /rig/i,                            color: '#f5c400' }, // yellow
+  { match: /background|^bg/i,                 color: '#00b8d4' }, // teal
+  { match: /animation|^ani|^2da/i,            color: '#00c271' }, // green
+  { match: /fx|^2dfx|^2fx/i,                  color: '#3a7bd5' }, // blue
+  { match: /comp/i,                           color: '#d63eb4' }, // magenta
+  { match: /render/i,                         color: '#5a6070' }, // gray
+];
+function colorForProcess(procName) {
+  for (const m of PROCESS_COLORS) if (m.match.test(procName)) return m.color;
+  // Fallback: deterministic color from process name
+  let hash = 0;
+  for (let i = 0; i < procName.length; i++) hash = procName.charCodeAt(i) + ((hash << 5) - hash);
+  const palette = ['#f58220','#f5c400','#00b8d4','#00c271','#3a7bd5','#d63eb4','#7ed957','#5a6070'];
+  return palette[Math.abs(hash) % palette.length];
+}
+
+// Get the Monday (start of ISO week) of a given date
+function startOfWeek(d) {
+  const x = new Date(d);
+  const day = x.getDay();
+  const diff = x.getDate() - day + (day === 0 ? -6 : 1); // Monday
+  x.setDate(diff);
+  x.setHours(0,0,0,0);
+  return x;
+}
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function diffDays(a, b) { return Math.round((b - a) / (1000*60*60*24)); }
+function fmtShortDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+function fmtFullDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+
+function renderSchedule(schedule) {
+  if (!schedule || !schedule.length) {
+    return `
+      <div class="schedule-card">
+        <div class="section-header"><div class="section-title">Production Schedule</div></div>
+        <div class="gantt-empty">No schedule data available. Add a SCHEDULE_DATA sheet with columns: episode, process, start_date, due_date, take1, take2, ...</div>
+      </div>`;
+  }
+
+  // Compute date range across the entire schedule
+  let minDate = schedule[0].start, maxDate = schedule[0].due;
+  schedule.forEach(s => {
+    if (s.start < minDate) minDate = s.start;
+    if (s.due > maxDate) maxDate = s.due;
+    s.takes.forEach(t => { if (t.date > maxDate) maxDate = t.date; });
+  });
+
+  // Round to weeks
+  const weekStart = startOfWeek(minDate);
+  const weekEnd = startOfWeek(addDays(maxDate, 7)); // include the week after max
+  const totalWeeks = Math.max(1, diffDays(weekStart, weekEnd) / 7);
+  const totalDays = totalWeeks * 7;
+
+  // Build week header columns
+  const weeks = [];
+  for (let i = 0; i < totalWeeks; i++) {
+    const wkStart = addDays(weekStart, i * 7);
+    weeks.push({ num: i + 1, date: wkStart });
+  }
+
+  // Today position
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const todayDays = diffDays(weekStart, today);
+  const todayPct = (todayDays / totalDays) * 100;
+  const showTodayLine = todayPct >= 0 && todayPct <= 100;
+
+  // Group by episode
+  const byEpisode = {};
+  schedule.forEach(s => {
+    if (!byEpisode[s.episode]) byEpisode[s.episode] = [];
+    byEpisode[s.episode].push(s);
+  });
+  const episodeIds = Object.keys(byEpisode);
+
+  // Layout columns: process label (180px) + week cells
+  const labelCol = 180;
+  const minWeekW = 60;
+  const totalWidth = labelCol + (totalWeeks * minWeekW);
+
+  // Find which episode has activity today (default expanded)
+  let activeEpisode = null;
+  for (const ep of episodeIds) {
+    const rows = byEpisode[ep];
+    if (rows.some(r => r.start <= today && r.due >= today)) { activeEpisode = ep; break; }
+  }
+  if (!activeEpisode) activeEpisode = episodeIds[0];
+
+  // Week header HTML
+  const weekHeaderCells = weeks.map(w =>
+    `<div class="gantt-week-cell" style="grid-column:span 1">
+       <div class="gantt-week-num">WK ${w.num}</div>
+       <div class="gantt-week-date">${fmtShortDate(w.date)}</div>
+     </div>`
+  ).join('');
+
+  // Episode blocks
+  const episodeBlocks = episodeIds.map(epId => {
+    const rows = byEpisode[epId];
+    const isCollapsed = epId !== activeEpisode;
+    const epStart = rows.reduce((min, r) => r.start < min ? r.start : min, rows[0].start);
+    const epDue = rows.reduce((max, r) => r.due > max ? r.due : max, rows[0].due);
+
+    const processRows = rows.map(r => {
+      const startDays = diffDays(weekStart, r.start);
+      const endDays = diffDays(weekStart, r.due);
+      const leftPct = (startDays / totalDays) * 100;
+      const widthPct = ((endDays - startDays) / totalDays) * 100;
+      const color = colorForProcess(r.process);
+
+      // progress within bar (today position relative to bar)
+      let progressPct = 0;
+      if (today >= r.start && today <= r.due) {
+        progressPct = ((today - r.start) / (r.due - r.start)) * 100;
+      } else if (today > r.due) {
+        progressPct = 100;
+      }
+
+      const takeMarks = r.takes.map(t => {
+        const tDays = diffDays(weekStart, t.date);
+        const tPct = (tDays / totalDays) * 100;
+        return `
+          <div class="gantt-take" style="left:${tPct}%;background:${color};border-color:${color};">
+            <div class="gantt-take-tooltip" style="transform:translateX(-50%) rotate(-45deg);">Take ${t.num} — ${fmtFullDate(t.date)}</div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="gantt-row" style="grid-template-columns:${labelCol}px 1fr;">
+          <div class="gantt-process-label">${escapeHtml(r.process)}</div>
+          <div class="gantt-track" style="position:relative;">
+            <div class="gantt-bar" style="left:${leftPct}%;width:${widthPct}%;background:${color};">
+              <div class="gantt-bar-progress" style="width:${progressPct}%;"></div>
+              <div class="gantt-bar-tooltip">${escapeHtml(r.process)} · ${fmtShortDate(r.start)} → ${fmtShortDate(r.due)}</div>
+            </div>
+            ${takeMarks}
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="gantt-episode-header ${isCollapsed ? 'collapsed' : ''}" data-ep="${escapeAttr(epId)}" onclick="toggleEpisode(this)">
+        <svg class="gantt-chevron" viewBox="0 0 16 16" fill="none">
+          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="gantt-episode-name">${escapeHtml(epId)}</div>
+        <div class="gantt-episode-meta">${rows.length} processes · ${fmtShortDate(epStart)} → ${fmtShortDate(epDue)}</div>
+      </div>
+      <div class="gantt-episode-rows ${isCollapsed ? 'collapsed' : ''}" style="max-height:${isCollapsed ? '0' : (rows.length * 40 + 20) + 'px'};">
+        ${processRows}
+      </div>`;
+  }).join('');
+
+  // Today line container offset: labelCol px + percentage of remaining width
+  const todayLineLeft = `calc(${labelCol}px + ${todayPct}% * (100% - ${labelCol}px) / 100%)`;
+
+  return `
+    <div class="schedule-card">
+      <div class="section-header">
+        <div class="section-title">Production Schedule</div>
+        <div class="schedule-controls">
+          <button class="schedule-toggle-btn" onclick="toggleAllEpisodes(true)">Expand all</button>
+          <button class="schedule-toggle-btn" onclick="toggleAllEpisodes(false)">Collapse all</button>
+        </div>
+      </div>
+      <div class="gantt-wrap">
+        <div class="gantt-grid" style="min-width:${totalWidth}px;">
+          <div class="gantt-weeks-row" style="grid-template-columns:${labelCol}px repeat(${totalWeeks}, 1fr);">
+            <div></div>
+            ${weekHeaderCells}
+          </div>
+          <div style="position:relative;">
+            ${showTodayLine ? `
+              <div class="gantt-today-line" style="left:calc(${labelCol}px + (100% - ${labelCol}px) * ${todayPct/100}); top: 18px;"></div>
+            ` : ''}
+            ${episodeBlocks}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleEpisode(headerEl) {
+  const rows = headerEl.nextElementSibling;
+  const isCollapsed = headerEl.classList.toggle('collapsed');
+  rows.classList.toggle('collapsed', isCollapsed);
+  if (isCollapsed) {
+    rows.style.maxHeight = '0px';
+  } else {
+    rows.style.maxHeight = rows.scrollHeight + 'px';
+  }
+}
+
+function toggleAllEpisodes(expand) {
+  document.querySelectorAll('.gantt-episode-header').forEach(h => {
+    const rows = h.nextElementSibling;
+    if (expand) {
+      h.classList.remove('collapsed');
+      rows.classList.remove('collapsed');
+      rows.style.maxHeight = rows.scrollHeight + 'px';
+    } else {
+      h.classList.add('collapsed');
+      rows.classList.add('collapsed');
+      rows.style.maxHeight = '0px';
+    }
+  });
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1093,11 +1479,12 @@ function formatDate(s) {
 // ════════════════════════════════════════════════════════════
 async function loadData() {
   try {
-    const [generalRows, deptRows, epRows, histRows] = await Promise.all([
+    const [generalRows, deptRows, epRows, histRows, schedRows] = await Promise.all([
       fetchCSV(CONFIG.GENERAL_CSV),
       fetchCSV(CONFIG.DEPT_CSV),
       fetchCSV(CONFIG.EPISODE_CSV),
       fetchCSV(CONFIG.HISTORY_CSV),
+      fetchCSV(CONFIG.SCHEDULE_CSV),
     ]);
 
     if (!generalRows && !deptRows && !epRows) {
@@ -1109,8 +1496,9 @@ async function loadData() {
     const depts = parseDepts(deptRows);
     const episodes = parseEpisodes(epRows, depts);
     const history = parseHistory(histRows);
+    const schedule = parseSchedule(schedRows);
 
-    render({ general, depts, episodes, history });
+    render({ general, depts, episodes, history, schedule });
   } catch (err) {
     console.error(err);
     document.getElementById('main-content').innerHTML = `
