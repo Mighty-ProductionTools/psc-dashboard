@@ -1544,12 +1544,24 @@ function formatDate(s) {
 // ════════════════════════════════════════════════════════════
 async function loadData() {
   try {
+    // Fetch each CSV independently — if one fails, others still load.
+    const safeFetch = async (url, label) => {
+      try {
+        const res = await fetchCSV(url);
+        console.log(`[FETCH ${label}]`, res ? `${res.length} rows` : 'no response');
+        return res;
+      } catch (e) {
+        console.error(`[FETCH ${label}] failed:`, e.message);
+        return null;
+      }
+    };
+
     const [generalRows, deptRows, epRows, histRows, schedRows] = await Promise.all([
-      fetchCSV(CONFIG.GENERAL_CSV),
-      fetchCSV(CONFIG.DEPT_CSV),
-      fetchCSV(CONFIG.EPISODE_CSV),
-      fetchCSV(CONFIG.HISTORY_CSV),
-      fetchCSV(CONFIG.SCHEDULE_CSV),
+      safeFetch(CONFIG.GENERAL_CSV,  'GENERAL'),
+      safeFetch(CONFIG.DEPT_CSV,     'DEPT'),
+      safeFetch(CONFIG.EPISODE_CSV,  'EPISODE'),
+      safeFetch(CONFIG.HISTORY_CSV,  'HISTORY'),
+      safeFetch(CONFIG.SCHEDULE_CSV, 'SCHEDULE'),
     ]);
 
     if (!generalRows && !deptRows && !epRows) {
@@ -1557,11 +1569,21 @@ async function loadData() {
       return;
     }
 
-    const general = parseGeneral(generalRows);
-    const depts = parseDepts(deptRows);
-    const episodes = parseEpisodes(epRows, depts);
-    const history = parseHistory(histRows);
-    const schedule = parseSchedule(schedRows);
+    // Parse each section independently so a failure in one doesn't kill the rest.
+    let general = {}, depts = [], episodes = [], history = [], schedule = [];
+    try { general = parseGeneral(generalRows); } catch (e) { console.error('parseGeneral failed:', e); }
+    try { depts = parseDepts(deptRows); } catch (e) { console.error('parseDepts failed:', e); }
+    try { episodes = parseEpisodes(epRows, depts); } catch (e) { console.error('parseEpisodes failed:', e); }
+    try { history = parseHistory(histRows); } catch (e) { console.error('parseHistory failed:', e); }
+    try { schedule = parseSchedule(schedRows); } catch (e) { console.error('parseSchedule failed:', e); }
+
+    console.log('[DASHBOARD] data ready:', {
+      general: Object.keys(general).length,
+      depts: depts.length,
+      episodes: episodes.length,
+      history: history.length,
+      schedule: schedule.length,
+    });
 
     render({ general, depts, episodes, history, schedule });
   } catch (err) {
