@@ -510,12 +510,18 @@ async function checkPassword(input) {
   return hash === PASSWORD_HASH;
 }
 
+let __GATE_UNLOCKED__ = false;
+let __LOAD_IN_PROGRESS__ = false;
+let __REFRESH_INTERVAL__ = null;
+
 function unlockGate() {
+  if (__GATE_UNLOCKED__) return; // idempotent — only run once
+  __GATE_UNLOCKED__ = true;
   document.getElementById("gate").classList.add("hidden");
   // Start loading data
   loadData();
-  if (CONFIG.REFRESH_MINUTES > 0) {
-    setInterval(loadData, CONFIG.REFRESH_MINUTES * 60 * 1000);
+  if (CONFIG.REFRESH_MINUTES > 0 && !__REFRESH_INTERVAL__) {
+    __REFRESH_INTERVAL__ = setInterval(loadData, CONFIG.REFRESH_MINUTES * 60 * 1000);
   }
 }
 
@@ -1545,6 +1551,11 @@ function formatDate(s) {
 // MAIN
 // ════════════════════════════════════════════════════════════
 async function loadData() {
+  if (__LOAD_IN_PROGRESS__) {
+    console.log('[DASHBOARD] load already in progress, skipping');
+    return;
+  }
+  __LOAD_IN_PROGRESS__ = true;
   try {
     // Fetch each CSV independently — if one fails, others still load.
     const safeFetch = async (url, label) => {
@@ -1596,6 +1607,8 @@ async function loadData() {
         ${escapeHtml(err.message)}<br>
         Check that your Google Sheets CSV URLs are correct and the sheets are published to web.
       </div>`;
+  } finally {
+    __LOAD_IN_PROGRESS__ = false;
   }
 }
 
