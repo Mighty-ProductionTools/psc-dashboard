@@ -1,1 +1,1 @@
-# psc-dashboard
+# yko-dashboard
