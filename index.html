@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mighty Production Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
@@ -349,6 +350,91 @@
     text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px;
   }
 
+
+  /* ───────── v2 refinements ───────── */
+  /* Entrance animation plays on the first load only, never on the 5-minute refresh */
+  .fade-up { opacity: 1; transform: none; animation: none; }
+  main.first .fade-up { opacity: 0; transform: translateY(10px); animation: fadeUp 0.45s ease forwards; }
+  @media (prefers-reduced-motion: reduce) { main.first .fade-up { opacity: 1; transform: none; animation: none; } .skeleton { animation: none; } }
+
+  .live-pill.stale .live-dot { background: var(--orange); animation: none; }
+  .live-pill.stale .live-text { color: var(--orange); }
+
+  .gauge-unit { font-size: 20px; font-weight: 800; }
+  .gauge-number.gauge-tasks { font-size: 38px; letter-spacing: -2.5px; }
+  .gauge-of { font-size: 14px; font-weight: 700; color: var(--muted); letter-spacing: 0; margin-left: 4px; }
+
+  .empty-note { color: var(--muted); text-align: center; padding: 40px 16px; font-size: 13px; grid-column: 1 / -1; }
+  .load-error { max-width: 520px; margin: 80px auto; text-align: center; background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 44px 36px; }
+  .load-error-title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 10px; }
+  .load-error-text { font-size: 14px; color: var(--muted); margin-bottom: 26px; line-height: 1.6; }
+  .load-error-btn { width: auto; padding: 12px 32px; }
+  .gate-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+  .dept-card:focus-visible, .ep-row:focus-visible, .gantt-episode-header:focus-visible, .tab:focus-visible, .schedule-toggle-btn:focus-visible, .gantt-take:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  /* Weekly chart */
+  .chart-area { position: relative; height: 190px; }
+  svg.chart { display: block; width: 100%; height: 190px; overflow: visible; }
+  .chart-tick { font: 700 10px 'Nunito Sans', sans-serif; fill: #8a919e; }
+  .legend-dash { width: 16px; height: 0; border-top: 2px dashed var(--orange); opacity: 0.8; }
+  .chart-tip { position: absolute; top: 0; background: var(--text); color: #fff; border-radius: 8px; padding: 8px 12px; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; display: flex; flex-direction: column; gap: 3px; box-shadow: 0 6px 20px rgba(0,0,0,0.18); z-index: 3; }
+  .chart-tip[hidden] { display: none; }
+  .chart-tip b { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  .chart-tip span { display: flex; align-items: center; gap: 6px; }
+  .chart-tip i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+  /* Schedule */
+  .schedule-controls { flex-wrap: wrap; justify-content: flex-end; }
+  .gantt-key { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; color: var(--muted); margin-right: 6px; }
+  .gantt-key-take { width: 9px; height: 9px; background: #fff; border: 2px solid var(--text); transform: rotate(45deg); }
+  .gantt-key-today { width: 2px; height: 12px; background: var(--red); }
+  .gantt-wrap { padding-top: 2px; }
+  .gantt-week-cell.current .gantt-week-num { color: var(--red); }
+  .gantt-body { position: relative; padding-top: 14px; }
+  .gantt-today-line { top: 14px; }
+  .gantt-today-line::before { top: -15px; padding: 0 5px; line-height: 13px; }
+  .gantt-episode-rows, .gantt-episode-rows.collapsed { max-height: none !important; opacity: 1; overflow: visible; transition: none; padding-bottom: 6px; }
+  .gantt-episode-rows.collapsed { display: none; }
+  .gantt-track { position: relative; }
+  .gantt-bar:hover { transform: none; filter: brightness(1.05); }
+  .gantt-bar-progress { border-radius: 4px 0 0 4px; }
+  .gantt-take { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; transform: none; background: none; border: 0; box-shadow: none; z-index: 6; cursor: pointer; }
+  .gantt-take:hover { transform: none; }
+  .gantt-take i { position: absolute; inset: 2px; background: #fff; border: 2.5px solid var(--c, var(--text)); transform: rotate(45deg); box-shadow: 0 0 0 1.5px #fff, 0 2px 4px rgba(0,0,0,0.25); transition: transform 0.15s; }
+  .gantt-take:hover i, .gantt-take:focus i { transform: rotate(45deg) scale(1.25); }
+  .gantt-tip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--text); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 20; }
+  .gantt-bar:hover > .gantt-tip, .gantt-take:hover > .gantt-tip, .gantt-take:focus > .gantt-tip { opacity: 1; }
+  .gantt-track:has(.gantt-take:hover) .gantt-bar > .gantt-tip { opacity: 0; }
+
+  /* Phones and small tablets */
+  @media (max-width: 700px) {
+    header { padding: 0 16px; height: 56px; }
+    .header-center { display: none; }
+    .logo-img { height: 26px; }
+    main { padding: 24px 16px; }
+    .project-title { font-size: 40px; letter-spacing: -1.5px; }
+    .project-meta { gap: 10px 16px; }
+    .meta-divider { display: none; }
+    .overall-bar-card, .chart-card, .schedule-card { padding: 20px 18px; border-radius: 16px; }
+    .bar-header, .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .bar-legend { flex-wrap: wrap; gap: 6px 16px; }
+    .schedule-controls { justify-content: flex-start; }
+    .dept-grid { grid-template-columns: 1fr; }
+    .tabs { width: 100%; }
+    .tab { flex: 1; padding: 9px 10px; }
+    .ep-row { grid-template-columns: 78px 1fr 64px; padding: 14px 16px; gap: 10px; }
+    .ep-col-diffic, .ep-col-tasks { display: none; }
+    .modal-header { padding: 24px 22px; flex-direction: column; align-items: flex-start; }
+    .modal-ep-meta { justify-content: flex-start; }
+    .modal-ep-title { font-size: 32px; }
+    .modal-body { padding: 22px; }
+    .modal-stats-row, .modal-stats-row[style] { grid-template-columns: 1fr 1fr !important; }
+    .dept-breakdown-row, .bd-header-row { grid-template-columns: 84px 1fr 52px 52px; gap: 8px; padding-left: 10px; padding-right: 10px; }
+    .gate-box { padding: 36px 24px; }
+    .gantt-process-label { padding: 0 8px 0 22px; font-size: 11px; }
+  }
+
 </style>
 </head>
 <body>
@@ -472,1164 +558,877 @@
 </div>
 
 <script>
-
 // ════════════════════════════════════════════════════════════
-// CONFIG: Paste your published Google Sheets CSV URLs here
+// CONFIG — one block per project. Everything else is generic.
 // ════════════════════════════════════════════════════════════
 const CONFIG = {
-  // To get these URLs: Open Google Sheet → File → Share → Publish to web
-  // → Choose specific sheet → CSV format → Publish → Copy URL
-  GENERAL_CSV:    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=1059643932&single=true&output=csv",
-  DEPT_CSV:       "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=583187388&single=true&output=csv",
-  EPISODE_CSV:    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=60272406&single=true&output=csv",
-  HISTORY_CSV:    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRCpsN-KsGKTfZBqodIEMPNrs2iXgLTYigt6KOEpGQG7-sOR6kBA-_1K-9e9lA0PGYNFk8PVsZM7m-7/pub?gid=520858740&single=true&output=csv",
-  SCHEDULE_CSV:   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA9xTZkI3mG4B-F0BtfJRobioyUZfYhSmAioJ1-vL1Vf7LbFEIJzcLCNfq7720wPNxHgTCdyQZ8fKi/pub?gid=1663461739&single=true&output=csv",
-
-  // Auto-refresh every N minutes (set to 0 to disable)
-  REFRESH_MINUTES: 5,
+  // Google Sheet → File → Share → Publish to web → (one sheet) → CSV
+  SHEETS: {
+    GENERAL:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQfYBUfd0qfKdJ5QRiOIppDMm2IeABOxvRJDH6EDvGBR5lds6Fe6Q5tXqLWYaxqfdFVlDzcsy8JGGJ4/pub?gid=1059643932&single=true&output=csv",
+    DEPT:     "https://docs.google.com/spreadsheets/d/e/2PACX-1vQfYBUfd0qfKdJ5QRiOIppDMm2IeABOxvRJDH6EDvGBR5lds6Fe6Q5tXqLWYaxqfdFVlDzcsy8JGGJ4/pub?gid=583187388&single=true&output=csv",
+    EPISODE:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQfYBUfd0qfKdJ5QRiOIppDMm2IeABOxvRJDH6EDvGBR5lds6Fe6Q5tXqLWYaxqfdFVlDzcsy8JGGJ4/pub?gid=60272406&single=true&output=csv",
+    HISTORY:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQfYBUfd0qfKdJ5QRiOIppDMm2IeABOxvRJDH6EDvGBR5lds6Fe6Q5tXqLWYaxqfdFVlDzcsy8JGGJ4/pub?gid=520858740&single=true&output=csv",
+    SCHEDULE: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQfYBUfd0qfKdJ5QRiOIppDMm2IeABOxvRJDH6EDvGBR5lds6Fe6Q5tXqLWYaxqfdFVlDzcsy8JGGJ4/pub?gid=329363891&single=true&output=csv",
+  },
+  // SHA-256 of the access password (https://emn178.github.io/online-tools/sha256.html)
+  PASSWORD_HASH: "525c0a7859081f00769d3f918497a154a9fd7f20deca626edca4ddd05ccf4f46",
+  REFRESH_MINUTES: 5,        // 0 disables auto-refresh
+  FETCH_TIMEOUT_MS: 25000,
+  // Dates written as 05/06/2026 are read month-first (US style, the Google Sheets
+  // default). Use "DMY" if the sheet is set to a day-first locale.
+  DATE_ORDER: "MDY",
+  // false: On Track / Watch / Behind is worked out here from delivered vs projected,
+  //        the same rule for departments and episodes.
+  // true:  use the "status" column of DEPT_DATA when it has a value.
+  USE_SHEET_STATUS: false,
+  BEHIND_GAP: 8,             // points behind plan that turn "Watch" into "Behind"
 };
+
+const STORAGE_KEY = "mighty_dashboard_unlocked";
+const $ = id => document.getElementById(id);
 
 // ════════════════════════════════════════════════════════════
 // PASSWORD GATE
+// Note: this keeps casual visitors out. It is not real security — the page
+// and the published CSV links can be read by anyone technical who has the URL.
 // ════════════════════════════════════════════════════════════
-// Hash the password with SHA-256 and compare to this hash.
-// To change the password, generate a new SHA-256 hash and replace the value below.
-// You can hash a password at: https://emn178.github.io/online-tools/sha256.html
-const PASSWORD_HASH = "f4137210b3c97efe2b4f9c3910b0bc716d263ededd082d99220cc881a2dab1ae";
-
-const STORAGE_KEY = "mighty_dashboard_unlocked";
-
 async function sha256(text) {
   const buf = new TextEncoder().encode(text);
-  const hashBuf = await crypto.subtle.digest("SHA-256", buf);
-  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,"0")).join("");
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function checkPassword(input) {
-  const hash = await sha256(input);
-  return hash === PASSWORD_HASH;
-}
-
-let __GATE_UNLOCKED__ = false;
-let __LOAD_IN_PROGRESS__ = false;
-let __REFRESH_INTERVAL__ = null;
-
+let gateUnlocked = false;
 function unlockGate() {
-  if (__GATE_UNLOCKED__) return; // idempotent — only run once
-  __GATE_UNLOCKED__ = true;
-  document.getElementById("gate").classList.add("hidden");
-  // Start loading data
-  loadData();
-  if (CONFIG.REFRESH_MINUTES > 0 && !__REFRESH_INTERVAL__) {
-    __REFRESH_INTERVAL__ = setInterval(loadData, CONFIG.REFRESH_MINUTES * 60 * 1000);
-  }
+  if (gateUnlocked) return;
+  gateUnlocked = true;
+  $("gate").classList.add("hidden");
+  startDashboard();
 }
 
 async function attemptLogin() {
-  const input = document.getElementById("gate-input").value;
-  const errEl = document.getElementById("gate-error");
-  errEl.textContent = "";
-  if (!input) { errEl.textContent = "Please enter the password"; return; }
-
-  const ok = await checkPassword(input);
-  if (ok) {
-    sessionStorage.setItem(STORAGE_KEY, "1");
-    unlockGate();
-  } else {
-    errEl.textContent = "Incorrect password. Please try again.";
-    document.getElementById("gate-input").value = "";
-    document.getElementById("gate-input").focus();
-  }
-}
-
-document.getElementById("gate-btn").addEventListener("click", attemptLogin);
-document.getElementById("gate-input").addEventListener("keydown", e => {
-  if (e.key === "Enter") attemptLogin();
-});
-
-// Auto-unlock if already logged in this session.
-// We defer with setTimeout(0) so all functions defined below this script block are ready.
-if (sessionStorage.getItem(STORAGE_KEY) === "1") {
-  setTimeout(unlockGate, 0);
-}
-
-// ════════════════════════════════════════════════════════════
-// CSV PARSER (handles quoted fields, commas inside quotes)
-// ════════════════════════════════════════════════════════════
-function parseCSV(text) {
-  const rows = [];
-  let row = [], field = '', inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inQuotes) {
-      if (c === '"' && text[i+1] === '"') { field += '"'; i++; }
-      else if (c === '"') { inQuotes = false; }
-      else { field += c; }
+  const input = $("gate-input"), err = $("gate-error"), btn = $("gate-btn");
+  err.textContent = "";
+  if (!input.value) { err.textContent = "Please enter the password"; return; }
+  btn.disabled = true;
+  try {
+    if (await sha256(input.value) === CONFIG.PASSWORD_HASH) {
+      try { sessionStorage.setItem(STORAGE_KEY, "1"); } catch (e) {}
+      unlockGate();
     } else {
-      if (c === '"') { inQuotes = true; }
-      else if (c === ',') { row.push(field); field = ''; }
-      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
-      else if (c === '\r') { /* skip */ }
-      else { field += c; }
+      err.textContent = "Incorrect password. Please try again.";
+      input.value = "";
+      input.focus();
     }
+  } catch (e) {
+    err.textContent = "This browser could not verify the password. Open the https:// link in an up-to-date browser.";
+  } finally {
+    btn.disabled = false;
   }
-  if (field !== '' || row.length) { row.push(field); rows.push(row); }
-  return rows;
 }
 
-// Parse a value: handles % strings, decimals, integers, blanks
+// ════════════════════════════════════════════════════════════
+// SMALL HELPERS
+// ════════════════════════════════════════════════════════════
+function esc(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+// "Start Date", "start_date", "StartDate" → "startdate"
+const normKey = s => (s === null || s === undefined ? "" : String(s)).toLowerCase().replace(/[^a-z0-9]/g, "");
+const cell = (row, idx) => (idx === undefined || !row ? "" : String(row[idx] === undefined ? "" : row[idx]).trim());
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const r1 = v => Math.round(v * 10) / 10;
+
 function parseNum(v) {
-  if (v === null || v === undefined || v === '') return null;
-  const s = String(v).trim().replace('%','').replace(/,/g,'');
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim().replace(/[%,\s]/g, "");
+  if (s === "") return null;
   const n = parseFloat(s);
   return isNaN(n) ? null : n;
 }
 
-// Normalize a percentage value into the 0–100 range.
-// Rule:
-//  • If the original cell text contains "%" → strip "%" and use the number directly (e.g. "37.93%" → 37.93)
-//  • If the original cell text is a pure decimal in [0,1] without "%" → multiply by 100 (e.g. "0.9028" → 90.28)
-//  • Otherwise treat the number as already a percentage (e.g. "37.93" → 37.93)
-// This avoids the bug where 1.14% was being misread as 100% because 1.14 fell under the "decimal" rule.
-function pct(v) {
-  if (v === null || v === undefined || v === '') return null;
-  const raw = String(v).trim();
-  const hasPctSign = raw.includes('%');
-  const cleaned = raw.replace('%','').replace(/,/g,'');
-  const n = parseFloat(cleaned);
-  if (isNaN(n)) return null;
-  if (hasPctSign) return Math.round(n * 100) / 100;        // "37.93%" → 37.93
-  if (n >= 0 && n <= 1) return Math.round(n * 10000) / 100; // "0.9028" → 90.28
-  return Math.round(n * 100) / 100;                         // "37.93" → 37.93
+// Percent reader for a group of cells that share a format.
+// "37.9%" is always 37.9. Without a % sign the group decides: if every value is
+// 1.5 or less the sheet is exporting fractions (0.379 → 37.9), otherwise the
+// numbers are already percents. Deciding per group avoids misreading a lone 1.14.
+function percentReader(samples) {
+  const vals = samples.filter(s => s !== null && s !== undefined && String(s).trim() !== "");
+  const anySign = vals.some(s => String(s).includes("%"));
+  const nums = vals.map(parseNum).filter(n => n !== null);
+  const fractions = !anySign && nums.length > 0 && nums.every(n => n >= 0 && n <= 1.5);
+  return v => {
+    const n = parseNum(v);
+    if (n === null) return null;
+    const out = (String(v).includes("%") || !fractions) ? n : n * 100;
+    return Math.round(out * 100) / 100;
+  };
 }
 
-// Find the data starting row in a sheet (skips title rows)
-// Looks for the row that contains expected header keywords
-function findHeaderRow(rows, keywords) {
-  for (let i = 0; i < rows.length; i++) {
-    const r = rows[i].map(c => (c||'').toLowerCase().trim());
-    if (keywords.every(k => r.some(cell => cell.includes(k.toLowerCase())))) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-// Build header → column-index map
-function headerMap(headerRow) {
-  const map = {};
-  headerRow.forEach((h, i) => {
-    if (h) map[String(h).trim().toLowerCase()] = i;
-  });
-  return map;
-}
-
-function getCell(row, map, key) {
-  const idx = map[key.toLowerCase()];
-  return idx !== undefined ? row[idx] : null;
-}
-
-// ════════════════════════════════════════════════════════════
-// FETCH DATA
-// ════════════════════════════════════════════════════════════
-async function fetchCSV(url) {
-  if (!url || url.startsWith('PASTE_')) return null;
-  // Add timestamp to bypass cache
-  const cacheBuster = url.includes('?') ? '&' : '?';
-  const res = await fetch(url + cacheBuster + 't=' + Date.now());
-  if (!res.ok) throw new Error('Failed to fetch: ' + url);
-  return parseCSV(await res.text());
-}
-
-// ════════════════════════════════════════════════════════════
-// PARSE GENERAL_DATA: key/value pairs
-// ════════════════════════════════════════════════════════════
-function parseGeneral(rows) {
-  const data = {};
-  if (!rows) return data;
-  let headerIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i].map(c => (c||'').toString().toLowerCase().trim());
-    if (row.includes('key') && row.includes('value')) { headerIdx = i; break; }
-  }
-  if (headerIdx < 0) {
-    console.warn('[GENERAL_DATA] header row not found. Looking for "key" + "value" columns.');
-    return data;
-  }
-  const map = headerMap(rows[headerIdx]);
-  const keyCol = map['key'], valCol = map['value'];
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const k = (rows[i][keyCol] || '').toString().trim();
-    const v = rows[i][valCol];
-    if (k) data[k] = v;
-  }
-  console.log('[GENERAL_DATA] parsed', Object.keys(data).length, 'keys:', Object.keys(data));
-  return data;
-}
-
-// ════════════════════════════════════════════════════════════
-// PARSE DEPT_DATA: list of departments
-// ════════════════════════════════════════════════════════════
-function parseDepts(rows) {
-  if (!rows) return [];
-
-  // Normalize header text aggressively: lowercase, strip non-alphanumerics.
-  // "DeptID" → "deptid", "dept_ID" → "deptid", "Dept Name" → "deptname", "delivered_pct" → "deliveredpct"
-  const normKey = s => (s||'').toString().toLowerCase().replace(/[^a-z0-9]/g,'');
-
-  // Find header row by looking for normalized "deptid" + something starting with "delivered"
-  let headerIdx = -1;
-  let map = {};
-  for (let i = 0; i < Math.min(rows.length, 8); i++) {
-    const row = rows[i] || [];
-    const normalized = row.map(normKey);
-    const hasDeptId = normalized.some(c => c === 'deptid' || c === 'id');
-    const hasDelivered = normalized.some(c => c.startsWith('delivered'));
-    if (hasDeptId && hasDelivered) {
-      headerIdx = i;
-      row.forEach((h, idx) => {
-        const k = normKey(h);
-        if (k && map[k] === undefined) map[k] = idx;
-      });
-      break;
-    }
-  }
-
-  if (headerIdx < 0) {
-    console.warn('[DEPT_DATA] header row not found. Need DeptID + delivered_pct columns.');
-    return [];
-  }
-  console.log('[DEPT_DATA] header at row', headerIdx, 'normalized cols:', Object.keys(map));
-
-  const idIdx = map['deptid'] !== undefined ? map['deptid'] : map['id'];
-  const nameIdx = ['dept','deptname','department','name'].map(k => map[k]).find(v => v !== undefined);
-  const delIdx = ['deliveredpct','delivered'].map(k => map[k]).find(v => v !== undefined);
-  const projIdx = ['projectedpct','projected'].map(k => map[k]).find(v => v !== undefined);
-  const statusIdx = map['status'];
-  console.log('[DEPT_DATA] using cols:', { id: idIdx, name: nameIdx, del: delIdx, proj: projIdx, status: statusIdx });
-
-  const depts = [];
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r) continue;
-    const deptId = (idIdx !== undefined ? (r[idIdx] || '') : '').toString().trim();
-    const deptName = (nameIdx !== undefined ? (r[nameIdx] || '') : '').toString().trim();
-
-    if (!deptId) continue;
-    const lowerId = deptId.toLowerCase();
-    if (lowerId.includes('average') || lowerId.includes('total') || lowerId === 'project') continue;
-    if (!deptName) continue;
-
-    const del = delIdx !== undefined ? pct(r[delIdx]) : null;
-    const proj = projIdx !== undefined ? pct(r[projIdx]) : null;
-    const status = statusIdx !== undefined ? (r[statusIdx] || '').toString().toLowerCase().trim() : '';
-
-    depts.push({
-      id: deptId,
-      name: deptName,
-      delivered: del,
-      projected: proj,
-      status: status,
-    });
-  }
-  console.log('[DEPT_DATA] parsed', depts.length, 'departments:', depts.map(d => d.id));
-  return depts;
-}
-
-// ════════════════════════════════════════════════════════════
-// PARSE EPISODE_DATA
-// ════════════════════════════════════════════════════════════
-function parseEpisodes(rows, depts) {
-  if (!rows) return [];
-
-  const normKey = s => (s||'').toString().toLowerCase().replace(/[^a-z0-9]/g,'');
-
-  // Find header row containing normalized "episode"
-  let headerIdx = -1;
-  let map = {};
-  for (let i = 0; i < Math.min(rows.length, 8); i++) {
-    const row = rows[i] || [];
-    const normalized = row.map(normKey);
-    if (normalized.includes('episode')) {
-      headerIdx = i;
-      row.forEach((h, idx) => {
-        const k = normKey(h);
-        if (k && map[k] === undefined) map[k] = idx;
-      });
-      // Also keep the legacy lowercase-with-underscores keys for backwards compat with getCell()
-      const legacy = headerMap(row);
-      Object.keys(legacy).forEach(k => { if (map[k] === undefined) map[k] = legacy[k]; });
-      break;
-    }
-  }
-  if (headerIdx < 0) {
-    console.warn('[EPISODE_DATA] header row not found. Looking for "episode" column.');
-    return [];
-  }
-  console.log('[EPISODE_DATA] header at row', headerIdx, 'cols:', Object.keys(map));
-
-  const episodes = [];
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const r = rows[i];
-    const ep = (getCell(r, map, 'episode') || '').trim();
-    if (!ep || ep.toLowerCase().includes('total') || ep.toLowerCase().includes('average')) continue;
-
-    const del = pct(getCell(r, map, 'delivered_pct'));
-    const proj = pct(getCell(r, map, 'projected_pct'));
-    const tasksDone = parseNum(getCell(r, map, 'deliveredcumulative')) ?? parseNum(getCell(r, map, 'tasks_done'));
-    const tasksTotal = parseNum(getCell(r, map, 'tasks_total'));
-
-    // Build dept breakdown for this episode using the deptIds from DEPT_DATA
-    const deptBreakdown = depts.map(d => {
-      const delKey = (d.id + '_del').toLowerCase();
-      const projKey = (d.id + '_proj').toLowerCase();
-      return {
-        id: d.id,
-        name: d.name,
-        del: pct(getCell(r, map, delKey)),
-        proj: pct(getCell(r, map, projKey)),
-      };
-    });
-
-    episodes.push({
-      id: ep,
-      difficulty: (getCell(r, map, 'difficulty') || '').trim().toUpperCase(),
-      delivered: del,
-      projected: proj,
-      tasksDone: tasksDone,
-      tasksTotal: tasksTotal,
-      depts: deptBreakdown,
-    });
-  }
-  return episodes;
-}
-
-// ════════════════════════════════════════════════════════════
-// PARSE WEEKLY_HISTORY
-// ════════════════════════════════════════════════════════════
-function parseSchedule(rows) {
-  if (!rows) return [];
-
-  // Normalize header text to a comparison key: lowercase, strip non-alphanumerics.
-  // Examples: "Start Date" → "startdate", "DueDate" → "duedate", "Take 1" → "take1"
-  const normKey = s => (s||'').toString().toLowerCase().replace(/[^a-z0-9]/g,'');
-
-  // Find a header row by looking for ANY row that contains a date-related column
-  // (start, due) AND something that smells like episode/process columns.
-  let headerIdx = -1;
-  let map = {};
-  for (let i = 0; i < Math.min(rows.length, 6); i++) {
-    const row = rows[i] || [];
-    const normalizedRow = row.map(normKey);
-    const hasStart = normalizedRow.some(c => c === 'startdate' || c === 'start');
-    const hasDue = normalizedRow.some(c => c === 'duedate' || c === 'due');
-    if (hasStart && hasDue) {
-      headerIdx = i;
-      // Build map of normalized-key → column index
-      row.forEach((h, idx) => {
-        const k = normKey(h);
-        if (k) map[k] = idx;
-      });
-      break;
-    }
-  }
-
-  if (headerIdx < 0) {
-    console.warn('[SCHEDULE_DATA] header row not found. Need columns containing "Start Date" + "Due Date" or similar.');
-    return [];
-  }
-
-  console.log('[SCHEDULE_DATA] header at row', headerIdx, 'normalized cols:', Object.keys(map));
-
-  // Detect column positions
-  const startIdx = map['startdate'] !== undefined ? map['startdate'] : map['start'];
-  const dueIdx   = map['duedate']   !== undefined ? map['duedate']   : map['due'];
-
-  // Episode / process columns:
-  //  - Look for explicit "episode" / "process" headers
-  //  - Otherwise fall back to columns A and B (indices 0 and 1)
-  let epIdx = map['episode'] !== undefined ? map['episode'] : 0;
-  let procIdx = map['process'] !== undefined ? map['process'] : 1;
-  console.log('[SCHEDULE_DATA] using columns:', { episode: epIdx, process: procIdx, start: startIdx, due: dueIdx });
-
-  // Detect take columns by normalized key like "take1", "take2", ...
-  const takeCols = [];
-  Object.keys(map).forEach(key => {
-    const m = key.match(/^take(\d+)$/);
-    if (m) takeCols.push({ idx: map[key], num: parseInt(m[1], 10) });
-  });
-  takeCols.sort((a,b) => a.num - b.num);
-  console.log('[SCHEDULE_DATA] take columns:', takeCols);
-
-  const schedule = [];
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r) continue;
-    const ep = (r[epIdx] || '').toString().trim();
-    const proc = (r[procIdx] || '').toString().trim();
-    if (!ep || !proc) continue;
-
-    const startDate = parseDate(r[startIdx]);
-    const dueDate = parseDate(r[dueIdx]);
-    if (!startDate || !dueDate) continue;
-
-    const takes = [];
-    takeCols.forEach(tc => {
-      const d = parseDate(r[tc.idx]);
-      if (d) takes.push({ num: tc.num, date: d });
-    });
-
-    schedule.push({ episode: ep, process: proc, start: startDate, due: dueDate, takes: takes });
-  }
-  console.log('[SCHEDULE_DATA] parsed', schedule.length, 'rows');
-  return schedule;
-}
-
-// Robust date parser. Handles: "4/20/2026", "2026-04-20", "Apr 20, 2026", Excel serials.
+// Dates are built from their parts so they never shift a day with the time zone.
 function parseDate(v) {
-  if (v === null || v === undefined || v === '') return null;
+  if (v === null || v === undefined) return null;
   const s = String(v).trim();
   if (!s) return null;
-  // Try ISO and US formats
-  const d = new Date(s);
-  if (!isNaN(d.getTime())) return d;
-  // Try M/D/YYYY explicitly
-  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/);
   if (m) {
-    let yr = parseInt(m[3], 10);
-    if (yr < 100) yr += 2000;
-    return new Date(yr, parseInt(m[1],10)-1, parseInt(m[2],10));
+    let a = +m[1], b = +m[2], y = +m[3];
+    if (y < 100) y += 2000;
+    let month = a, day = b;
+    if (a > 12 || (CONFIG.DATE_ORDER === "DMY" && b <= 12)) { month = b; day = a; }
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    return new Date(y, month - 1, day);
+  }
+  if (!/[a-z]/i.test(s)) return null;          // only month names reach the fallback
+  const t = Date.parse(s);
+  if (isNaN(t)) return null;
+  const d = new Date(t);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+const DAY = 86400000;
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const diffDays = (a, b) => Math.round((b - a) / DAY);
+function startOfWeek(d) {                       // Monday
+  const day = d.getDay();
+  return addDays(d, day === 0 ? -6 : 1 - day);
+}
+const fmtShortDate = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const fmtFullDate = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const fmtPct = v => (v === null || v === undefined ? "—" : r1(v) + "%");
+const fmtNum = v => (v === null || v === undefined ? "—" : Math.round(v).toLocaleString("en-US"));
+const fmtDiff = d => (d === null ? "—" : r1(d) === 0 ? "0%" : (d > 0 ? "+" : "") + r1(d) + "%");
+
+function classify(del, proj) {
+  if (del === null || proj === null) return { cls: "warn", label: "No Data" };
+  if (del >= proj) return { cls: "good", label: "On Track" };
+  return proj - del > CONFIG.BEHIND_GAP ? { cls: "bad", label: "Behind" } : { cls: "warn", label: "Watch" };
+}
+const STATUS_COLOR = { good: "var(--green)", warn: "#f5c400", bad: "var(--red)" };
+const SHEET_STATUS = {
+  on_track: { cls: "good", label: "On Track" },
+  watch:    { cls: "warn", label: "Watch" },
+  behind:   { cls: "bad",  label: "Behind" },
+};
+function deptStatus(d) {
+  if (CONFIG.USE_SHEET_STATUS && SHEET_STATUS[d.status]) return SHEET_STATUS[d.status];
+  return classify(d.delivered, d.projected);
+}
+const difficultyCls = x => (x === "HIGH" ? "bad" : x === "MID" ? "warn" : "good");
+
+// ════════════════════════════════════════════════════════════
+// CSV
+// ════════════════════════════════════════════════════════════
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", q = false;
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) {
+      if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
+      else if (c === '"') q = false;
+      else field += c;
+    } else if (c === '"') q = true;
+    else if (c === ",") { row.push(field); field = ""; }
+    else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+    else if (c !== "\r") field += c;
+  }
+  if (field !== "" || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+// Finds the header row (title rows above it are skipped) and maps
+// normalized header → column index. The first column with a given name wins.
+function findHeader(rows, test, maxScan = 15) {
+  for (let i = 0; i < Math.min(rows.length, maxScan); i++) {
+    const keys = (rows[i] || []).map(normKey);
+    if (test(keys)) {
+      const map = {};
+      keys.forEach((k, idx) => { if (k && map[k] === undefined) map[k] = idx; });
+      return { idx: i, map };
+    }
   }
   return null;
 }
+const firstCol = (map, names) => names.map(n => map[n]).find(v => v !== undefined);
+const isSummaryRow = s => /total|average/i.test(s);
+
+// ════════════════════════════════════════════════════════════
+// SHEET PARSERS — columns are found by header name, extra columns are ignored
+// ════════════════════════════════════════════════════════════
+function parseGeneral(rows) {
+  const out = {};
+  const h = rows && findHeader(rows, k => k.includes("key") && k.includes("value"));
+  if (!h) { if (rows) console.warn("[GENERAL_DATA] no header row with key + value"); return out; }
+  for (let i = h.idx + 1; i < rows.length; i++) {
+    const k = normKey(cell(rows[i], h.map.key));
+    if (k && out[k] === undefined) out[k] = cell(rows[i], h.map.value);
+  }
+  return out;
+}
+
+function parseDepts(rows) {
+  const h = rows && findHeader(rows, k => (k.includes("deptid") || k.includes("id")) && k.some(c => c.startsWith("delivered")));
+  if (!h) { if (rows) console.warn("[DEPT_DATA] no header row with dept_ID + delivered_pct"); return []; }
+  const idIdx = firstCol(h.map, ["deptid", "id"]);
+  const nameIdx = firstCol(h.map, ["dept", "deptname", "department", "name"]);
+  const delIdx = firstCol(h.map, ["deliveredpct", "delivered"]);
+  const projIdx = firstCol(h.map, ["projectedpct", "projected"]);
+  const body = rows.slice(h.idx + 1).filter(r => {
+    const id = cell(r, idIdx);
+    return id && !isSummaryRow(id) && !isSummaryRow(cell(r, nameIdx));
+  });
+  const pct = percentReader(body.flatMap(r => [cell(r, delIdx), cell(r, projIdx)]));
+  const seen = new Set();
+  return body.filter(r => { const id = cell(r, idIdx); if (seen.has(id)) return false; seen.add(id); return true; })
+    .map(r => ({
+      id: cell(r, idIdx),
+      name: cell(r, nameIdx) || cell(r, idIdx),
+      delivered: pct(cell(r, delIdx)),
+      projected: pct(cell(r, projIdx)),
+      status: cell(r, h.map.status).toLowerCase().replace(/[\s-]+/g, "_"),
+    }));
+}
+
+function parseEpisodes(rows, depts) {
+  const h = rows && findHeader(rows, k => k.includes("episode") && (k.includes("difficulty") || k.includes("deliveredpct")));
+  if (!h) { if (rows) console.warn("[EPISODE_DATA] no header row with episode + delivered_pct"); return []; }
+  const m = h.map;
+  const doneIdx = firstCol(m, ["deliveredcumulative", "tasksdone"]);
+  const deptCols = depts.map(d => ({ d, del: m[normKey(d.id) + "del"], proj: m[normKey(d.id) + "proj"] }));
+  const body = rows.slice(h.idx + 1).filter(r => { const e = cell(r, m.episode); return e && !isSummaryRow(e); });
+  const pctCols = [m.deliveredpct, m.projectedpct, ...deptCols.flatMap(c => [c.del, c.proj])].filter(i => i !== undefined);
+  const pct = percentReader(body.flatMap(r => pctCols.map(i => cell(r, i))));
+  return body.map(r => ({
+    id: cell(r, m.episode),
+    difficulty: cell(r, m.difficulty).toUpperCase(),
+    delivered: pct(cell(r, m.deliveredpct)),
+    projected: pct(cell(r, m.projectedpct)),
+    tasksDone: parseNum(cell(r, doneIdx)),
+    tasksTotal: parseNum(cell(r, m.taskstotal)),
+    depts: deptCols.map(c => ({ id: c.d.id, name: c.d.name, del: pct(cell(r, c.del)), proj: pct(cell(r, c.proj)) })),
+  }));
+}
 
 function parseHistory(rows) {
-  if (!rows) return [];
-  const headerIdx = findHeaderRow(rows, ['week','delivered_pct']);
-  if (headerIdx < 0) return [];
-  const map = headerMap(rows[headerIdx]);
+  const h = rows && findHeader(rows, k => k.includes("week") && k.some(c => c.startsWith("delivered")));
+  if (!h) { if (rows) console.warn("[WEEKLY_HISTORY] no header row with week + delivered_pct"); return []; }
+  const delIdx = firstCol(h.map, ["deliveredpct", "delivered"]);
+  const projIdx = firstCol(h.map, ["projectedpct", "projected"]);
+  const body = rows.slice(h.idx + 1).filter(r => cell(r, h.map.week));
+  const pct = percentReader(body.flatMap(r => [cell(r, delIdx), cell(r, projIdx)]));
+  return body
+    .map(r => {
+      const label = cell(r, h.map.week);
+      const n = label.match(/(\d+)/);
+      return { week: label, num: n ? +n[1] : null, delivered: pct(cell(r, delIdx)), projected: pct(cell(r, projIdx)) };
+    })
+    .filter(p => p.delivered !== null || p.projected !== null);
+}
 
-  const history = [];
-  for (let i = headerIdx + 1; i < rows.length; i++) {
+function parseSchedule(rows) {
+  const h = rows && findHeader(rows, k => (k.includes("startdate") || k.includes("start")) && (k.includes("duedate") || k.includes("due")));
+  if (!h) { if (rows) console.warn("[SCHEDULE_DATA] no header row with start_date + due_date (" + rows.length + " rows received)"); return []; }
+  const m = h.map;
+  const startIdx = firstCol(m, ["startdate", "start"]), dueIdx = firstCol(m, ["duedate", "due"]);
+  const epIdx = m.episode !== undefined ? m.episode : 0;
+  const procIdx = m.process !== undefined ? m.process : 1;
+  const takeCols = Object.keys(m).map(k => { const t = k.match(/^take(\d+)$/); return t ? { idx: m[k], num: +t[1] } : null; })
+    .filter(Boolean).sort((a, b) => a.num - b.num);
+  const out = [];
+  for (let i = h.idx + 1; i < rows.length; i++) {
     const r = rows[i];
-    const wk = (getCell(r, map, 'week') || '').trim();
-    if (!wk) continue;
-    const del = pct(getCell(r, map, 'delivered_pct'));
-    const proj = pct(getCell(r, map, 'projected_pct'));
-    if (del === null && proj === null) continue;
-    history.push({ week: wk, delivered: del ?? 0, projected: proj ?? 0 });
+    const episode = cell(r, epIdx), process = cell(r, procIdx);
+    const start = parseDate(cell(r, startIdx)), due = parseDate(cell(r, dueIdx));
+    if (!episode || !process || !start || !due || due < start) continue;
+    const takes = takeCols.map(t => ({ num: t.num, date: parseDate(cell(r, t.idx)) })).filter(t => t.date);
+    out.push({ episode, process, start, due, takes });
   }
-  return history;
+  return out;
 }
 
 // ════════════════════════════════════════════════════════════
-// CLASSIFY STATUS based on delivered vs projected
+// LOADING
 // ════════════════════════════════════════════════════════════
-function classifyStatus(del, proj) {
-  if (del === null || proj === null) return { cls: 'warn', label: 'No Data' };
-  if (del >= proj) return { cls: 'good', label: 'On Track' };
-  const gap = proj - del;
-  if (gap > 8) return { cls: 'bad', label: 'Behind' };
-  return { cls: 'warn', label: 'Watch' };
+const state = {
+  raw: {},            // last good CSV text per sheet
+  data: null,         // parsed data currently on screen
+  signature: null,    // to skip re-rendering when nothing changed
+  lastOk: null,       // time of the last successful refresh
+  loading: false,
+  timer: null,
+  tab: "depts",
+  collapsed: null,    // Set of collapsed episode ids in the schedule
+  skeleton: "",
+};
+
+async function fetchText(url) {
+  let lastErr;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), CONFIG.FETCH_TIMEOUT_MS);
+    try {
+      const res = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), { signal: ctrl.signal, cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const text = await res.text();
+      // A sheet that is not published answers with a web page instead of CSV.
+      if (/^\s*<(!doctype|html)/i.test(text)) throw new Error("sheet is not published as CSV");
+      return text;
+    } catch (e) {
+      lastErr = e.name === "AbortError" ? new Error("timed out") : e;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw lastErr;
+}
+
+async function loadData() {
+  if (state.loading) return;
+  state.loading = true;
+  try {
+    const names = Object.keys(CONFIG.SHEETS);
+    const results = await Promise.all(names.map(async n => {
+      const url = CONFIG.SHEETS[n];
+      if (!url || !/^https?:/.test(url)) return { n, ok: false, missing: true };
+      try { return { n, ok: true, text: await fetchText(url) }; }
+      catch (e) { console.warn(`[${n}] could not be loaded: ${e.message}`); return { n, ok: false }; }
+    }));
+    results.forEach(r => { if (r.ok) state.raw[r.n] = r.text; });
+    const failed = results.filter(r => !r.ok && !r.missing).map(r => r.n);
+    const core = ["GENERAL", "DEPT", "EPISODE"];
+
+    if (!core.some(n => state.raw[n])) { showLoadError(); return; }
+    if (core.some(n => failed.includes(n))) setPill(false); else { state.lastOk = new Date(); setPill(true); }
+
+    const signature = names.map(n => state.raw[n] || "").join("\u0001") + new Date().toDateString();
+    if (signature === state.signature) return;          // nothing new: leave the page alone
+    state.signature = signature;
+
+    const rows = n => (state.raw[n] ? parseCSV(state.raw[n]) : null);
+    const safe = (fn, fallback) => { try { return fn(); } catch (e) { console.error(e); return fallback; } };
+    const general = safe(() => parseGeneral(rows("GENERAL")), {});
+    const depts = safe(() => parseDepts(rows("DEPT")), []);
+    const episodes = safe(() => parseEpisodes(rows("EPISODE"), depts), []);
+    const history = safe(() => parseHistory(rows("HISTORY")), []);
+    const schedule = safe(() => parseSchedule(rows("SCHEDULE")), []);
+    console.log("[DASHBOARD] loaded", { general: Object.keys(general).length, depts: depts.length, episodes: episodes.length, history: history.length, schedule: schedule.length });
+
+    const first = !state.data;
+    state.data = { general, depts, episodes, history, schedule };
+    render(first);
+  } catch (e) {
+    console.error(e);
+    if (!state.data) showLoadError();
+  } finally {
+    state.loading = false;
+  }
+}
+
+function setPill(live) {
+  const pill = document.querySelector(".live-pill");
+  if (!pill) return;
+  const time = state.lastOk ? state.lastOk.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
+  pill.classList.toggle("stale", !live);
+  pill.querySelector(".live-text").textContent = live ? "LIVE" : "OFFLINE";
+  pill.title = live ? "Data refreshed at " + time : (time ? "Could not refresh. Showing data from " + time : "Could not refresh");
+}
+
+function showLoadError() {
+  setPill(false);
+  $("main-content").innerHTML = `
+    <div class="load-error">
+      <div class="load-error-title">We couldn't load the production data</div>
+      <div class="load-error-text">This is usually temporary. Please check your connection and try again.</div>
+      <button class="gate-btn load-error-btn" data-retry>Try again</button>
+    </div>`;
+}
+
+function startDashboard() {
+  loadData();
+  if (CONFIG.REFRESH_MINUTES > 0 && !state.timer) {
+    state.timer = setInterval(loadData, CONFIG.REFRESH_MINUTES * 60000);
+  }
+  // Coming back to the tab after a while refreshes straight away.
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && state.lastOk && Date.now() - state.lastOk > CONFIG.REFRESH_MINUTES * 60000) loadData();
+  });
 }
 
 // ════════════════════════════════════════════════════════════
 // RENDER
 // ════════════════════════════════════════════════════════════
-function fmtPct(v) { return v === null || v === undefined ? '—' : (Math.round(v*10)/10) + '%'; }
-function fmtNum(v) { return v === null || v === undefined ? '—' : Math.round(v).toLocaleString(); }
+const ARC = 251.3;   // length of the half-circle gauge
+function gauge(id, colors, fraction) {
+  const off = ARC * (1 - clamp(fraction || 0, 0, 1));
+  return `
+    <svg class="gauge-svg" viewBox="0 0 180 100" aria-hidden="true">
+      <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#e2e5ea" stroke-width="14" stroke-linecap="round"/>
+      ${fraction > 0 ? `<path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#${id})" stroke-width="14" stroke-linecap="round" stroke-dasharray="${ARC}" stroke-dashoffset="${off}"/>` : ""}
+      <defs><linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${colors[0]}"/><stop offset="100%" stop-color="${colors[1]}"/></linearGradient></defs>
+    </svg>`;
+}
 
-let __DATA__ = null;
+function render(first) {
+  const { general: g, depts, episodes, history, schedule } = state.data;
+  const projectName = g.projectname || "Production";
+  const weekCurrent = parseNum(g.weekcurrent) || 0;
+  const weekTotal = parseNum(g.weektotal) || 0;
+  const pct = percentReader([g.deliveredpct, g.projectedpct]);
+  const delivered = pct(g.deliveredpct), projected = pct(g.projectedpct);
+  const tasksDone = parseNum(g.tasksdone), tasksTotal = parseNum(g.taskstotal);
+  const tasksRemaining = (tasksDone !== null && tasksTotal !== null) ? Math.max(0, tasksTotal - tasksDone) : parseNum(g.tasksremaining);
+  const finalDelivery = g.finaldelivery || "—";
+  const upd = parseDate(g.lastupdated);
+  const lastUpdated = upd ? fmtFullDate(upd) : (g.lastupdated || "—");
+  const schedulePct = weekTotal > 0 ? clamp(r1(weekCurrent / weekTotal * 100), 0, 100) : 0;
+  const diff = (delivered !== null && projected !== null) ? delivered - projected : null;
 
-function render(data) {
-  __DATA__ = data;
-  const { general, depts, episodes, history, schedule } = data;
-
-  const projectName = general.project_name || 'Production';
-  const weekCurrent = parseNum(general.week_current) || 0;
-  const weekTotal = parseNum(general.week_total) || 0;
-  const deliveredPct = pct(general.delivered_pct);
-  const projectedPct = pct(general.projected_pct);
-  const tasksDone = parseNum(general.tasks_done);
-  const tasksTotal = parseNum(general.tasks_total);
-  const tasksRemaining = parseNum(general.tasks_remaining) ?? (tasksTotal && tasksDone ? tasksTotal - tasksDone : null);
-  const finalDelivery = general.final_delivery || '—';
-  const lastUpdated = formatDate(general.last_updated);
-  const schedulePctRaw = weekTotal > 0 ? (weekCurrent / weekTotal) * 100 : 0;
-  const schedulePct = Math.min(100, Math.round(schedulePctRaw * 10) / 10);
-
-  const diffPct = (deliveredPct !== null && projectedPct !== null) ? (deliveredPct - projectedPct) : null;
-  const diffSign = diffPct === null ? '' : (diffPct >= 0 ? '+' : '');
-  const diffClass = diffPct === null ? 'neutral' : (diffPct >= 0 ? 'positive' : 'negative');
-
-  const deliveredCircumference = 251.3;
-  const delDashOffset = deliveredPct !== null ? deliveredCircumference * (1 - deliveredPct/100) : deliveredCircumference;
-  const projDashOffset = projectedPct !== null ? deliveredCircumference * (1 - projectedPct/100) : deliveredCircumference;
-  const tasksPctDone = (tasksDone && tasksTotal) ? (tasksDone/tasksTotal*100) : 0;
-  const tasksDashOffset = deliveredCircumference * (1 - tasksPctDone/100);
-
-  const main = document.getElementById('main-content');
+  document.title = projectName + " · Mighty Production Dashboard";
+  const main = $("main-content");
+  main.classList.toggle("first", !!first);
   main.innerHTML = `
-    <!-- PROJECT HEADER -->
     <div class="project-header fade-up">
       <div>
         <div class="project-eyebrow">Weekly Production Report</div>
-        <div class="project-title">${escapeHtml(projectName)}</div>
+        <div class="project-title">${esc(projectName)}</div>
         <div class="project-meta">
           <div class="meta-chip">Episodes <span class="val">${episodes.length}</span></div>
           <div class="meta-divider"></div>
-          <div class="meta-chip">Final Delivery <span class="val">${escapeHtml(finalDelivery)}</span></div>
+          <div class="meta-chip">Final Delivery <span class="val">${esc(finalDelivery)}</span></div>
           <div class="meta-divider"></div>
-          <div class="meta-chip">Updated <span class="val">${escapeHtml(lastUpdated)}</span></div>
+          <div class="meta-chip">Updated <span class="val">${esc(lastUpdated)}</span></div>
         </div>
       </div>
       <div class="week-progress-wrap">
         <div class="week-label">Production Week</div>
-        <div class="week-numbers">
-          <span class="current">${weekCurrent}</span>
-          <span class="sep">/</span>
-          <span class="total">${weekTotal}</span>
-        </div>
+        <div class="week-numbers"><span class="current">${fmtNum(weekCurrent)}</span><span class="sep">/</span><span class="total">${fmtNum(weekTotal)}</span></div>
         <div class="week-track"><div class="week-fill" style="width:${schedulePct}%"></div></div>
         <div class="week-sub">${schedulePct}% of production schedule</div>
       </div>
     </div>
 
-    <!-- GAUGES -->
     <div class="gauges-section">
       <div class="gauge-card main-card fade-up">
         <div class="gauge-label">Overall Progress</div>
-        <div class="gauge-svg-wrap">
-          <svg class="gauge-svg" viewBox="0 0 180 100">
-            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#e2e5ea" stroke-width="14" stroke-linecap="round"/>
-            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#g1)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deliveredCircumference}" stroke-dashoffset="${delDashOffset}"/>
-            <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00c271"/><stop offset="100%" stop-color="#00b8d4"/></linearGradient></defs>
-          </svg>
-          <div class="gauge-center-val"><div class="gauge-number green">${deliveredPct !== null ? Math.round(deliveredPct) : '—'}<span style="font-size:20px;font-weight:800">%</span></div></div>
+        <div class="gauge-svg-wrap">${gauge("g1", ["#00c271", "#00b8d4"], (delivered || 0) / 100)}
+          <div class="gauge-center-val"><div class="gauge-number green">${delivered !== null ? Math.round(delivered) : "—"}<span class="gauge-unit">%</span></div></div>
         </div>
         <div class="gauge-sub">Total project delivered</div>
-        ${diffPct !== null ? `<div class="gauge-badge ${diffClass}">${diffPct >= 0 ? '▲' : '▼'} ${diffSign}${Math.round(diffPct*10)/10}% vs projected</div>` : ''}
+        ${diff !== null ? `<div class="gauge-badge ${diff >= 0 ? "positive" : "negative"}">${diff >= 0 ? "▲" : "▼"} ${fmtDiff(diff)} vs projected</div>` : ""}
       </div>
-
       <div class="gauge-card warn-card fade-up">
         <div class="gauge-label">Projected to Date</div>
-        <div class="gauge-svg-wrap">
-          <svg class="gauge-svg" viewBox="0 0 180 100">
-            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#e2e5ea" stroke-width="14" stroke-linecap="round"/>
-            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#g2)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deliveredCircumference}" stroke-dashoffset="${projDashOffset}"/>
-            <defs><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f5c400"/><stop offset="100%" stop-color="#f58220"/></linearGradient></defs>
-          </svg>
-          <div class="gauge-center-val"><div class="gauge-number orange">${projectedPct !== null ? Math.round(projectedPct) : '—'}<span style="font-size:20px;font-weight:800">%</span></div></div>
+        <div class="gauge-svg-wrap">${gauge("g2", ["#f5c400", "#f58220"], (projected || 0) / 100)}
+          <div class="gauge-center-val"><div class="gauge-number orange">${projected !== null ? Math.round(projected) : "—"}<span class="gauge-unit">%</span></div></div>
         </div>
         <div class="gauge-sub">Where we should be per schedule</div>
-        <div class="gauge-badge neutral">Schedule week ${weekCurrent} of ${weekTotal}</div>
+        <div class="gauge-badge neutral">Schedule week ${fmtNum(weekCurrent)} of ${fmtNum(weekTotal)}</div>
       </div>
-
       <div class="gauge-card info-card fade-up">
         <div class="gauge-label">Tasks Completed</div>
-        <div class="gauge-svg-wrap">
-          <svg class="gauge-svg" viewBox="0 0 180 100">
-            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="#e2e5ea" stroke-width="14" stroke-linecap="round"/>
-            <path d="M10,90 A80,80 0 0,1 170,90" fill="none" stroke="url(#g3)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deliveredCircumference}" stroke-dashoffset="${tasksDashOffset}"/>
-            <defs><linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3a7bd5"/><stop offset="100%" stop-color="#00b8d4"/></linearGradient></defs>
-          </svg>
-          <div class="gauge-center-val"><div class="gauge-number blue" style="font-size:38px;letter-spacing:-2.5px">${fmtNum(tasksDone)}<span style="font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0;margin-left:4px;">of ${fmtNum(tasksTotal)}</span></div></div>
+        <div class="gauge-svg-wrap">${gauge("g3", ["#3a7bd5", "#00b8d4"], tasksTotal ? (tasksDone || 0) / tasksTotal : 0)}
+          <div class="gauge-center-val"><div class="gauge-number blue gauge-tasks">${fmtNum(tasksDone)}<span class="gauge-of">of ${fmtNum(tasksTotal)}</span></div></div>
         </div>
-        <div class="gauge-sub">${tasksRemaining !== null ? fmtNum(tasksRemaining) + ' tasks remaining' : '—'}</div>
-        <div class="gauge-badge neutral">Delivery: ${escapeHtml(finalDelivery)}</div>
+        <div class="gauge-sub">${tasksRemaining !== null ? fmtNum(tasksRemaining) + " tasks remaining" : "—"}</div>
+        <div class="gauge-badge neutral">Delivery: ${esc(finalDelivery)}</div>
       </div>
     </div>
 
-    <!-- OVERALL BAR -->
     <div class="overall-bar-card fade-up">
       <div class="bar-header">
         <div class="bar-title">Overall Project Progress</div>
         <div class="bar-legend">
-          <div class="bar-legend-item"><div class="bar-legend-dot" style="background:linear-gradient(90deg,#00c271,#00b8d4)"></div>Delivered — ${fmtPct(deliveredPct)}</div>
-          <div class="bar-legend-item"><div class="bar-legend-dot" style="background:rgba(255,255,255,0.2)"></div>Projected — ${fmtPct(projectedPct)}</div>
+          <div class="bar-legend-item"><div class="bar-legend-dot" style="background:linear-gradient(90deg,#00c271,#00b8d4)"></div>Delivered — ${fmtPct(delivered)}</div>
+          <div class="bar-legend-item"><div class="bar-legend-dot" style="background:rgba(255,255,255,0.2)"></div>Projected — ${fmtPct(projected)}</div>
         </div>
       </div>
       <div class="dual-track">
-        <div class="track-projected" style="width:${projectedPct ?? 0}%"></div>
-        <div class="track-delivered" style="width:${deliveredPct ?? 0}%"></div>
+        <div class="track-projected" style="width:${clamp(projected || 0, 0, 100)}%"></div>
+        <div class="track-delivered" style="width:${clamp(delivered || 0, 0, 100)}%"></div>
       </div>
       <div class="bar-labels"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
     </div>
 
     ${renderSchedule(schedule)}
 
-    <!-- CHART -->
     <div class="chart-card fade-up">
       <div class="section-header">
         <div class="section-title">Delivered vs Projected — Weekly Progress</div>
         <div class="chart-legend">
           <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Delivered</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--orange);opacity:0.6"></div>Projected</div>
+          <div class="legend-item"><div class="legend-dash"></div>Projected</div>
         </div>
       </div>
-      <div class="chart-area">${renderChart(history)}</div>
+      <div class="chart-area" id="chart-area"></div>
     </div>
 
-    <!-- TABS -->
     <div class="tabs-row">
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('depts',this)">By Department</button>
-        <button class="tab" onclick="switchTab('eps',this)">By Episode</button>
+      <div class="tabs" role="tablist">
+        <button class="tab ${state.tab === "depts" ? "active" : ""}" data-tab="depts">By Department</button>
+        <button class="tab ${state.tab === "eps" ? "active" : ""}" data-tab="eps">By Episode</button>
       </div>
     </div>
-
-    <!-- DEPARTMENT GRID -->
-    <div class="tab-content active" id="tab-depts">
-      <div class="dept-grid">${renderDeptCards(depts)}</div>
-    </div>
-
-    <!-- EPISODE TABLE -->
-    <div class="tab-content" id="tab-eps">
+    <div class="tab-content ${state.tab === "depts" ? "active" : ""}" id="tab-depts"><div class="dept-grid">${renderDeptCards(depts)}</div></div>
+    <div class="tab-content ${state.tab === "eps" ? "active" : ""}" id="tab-eps">
       <div class="ep-table">
         <div class="ep-row ep-header">
-          <span>Episode</span><span>Difficulty</span><span>Progress</span>
-          <span style="text-align:right">Delivered</span><span style="text-align:right">Projected</span><span style="text-align:right">Diff</span>
+          <span>Episode</span><span class="ep-col-diffic">Difficulty</span><span>Progress</span>
+          <span class="ep-col-tasks" style="text-align:right">Tasks done</span><span class="ep-col-tasks" style="text-align:right">Total tasks</span><span style="text-align:right">vs Plan</span>
         </div>
         ${renderEpisodeRows(episodes)}
       </div>
-    </div>
-  `;
+    </div>`;
+
+  drawChart();
+  if (first) setTimeout(() => main.classList.remove("first"), 1600);
 }
 
 function renderDeptCards(depts) {
-  if (!depts.length) return '<p style="color:var(--muted);text-align:center;padding:40px;font-size:13px">No departments found.<br><span style="font-size:11px;opacity:0.7">Check that DEPT_DATA has a header row with "DeptID" and "delivered_pct" columns.<br>Open browser console (F12) for diagnostic info.</span></p>';
+  if (!depts.length) return `<p class="empty-note">No departments to show yet.</p>`;
   return depts.map((d, i) => {
-    const status = (d.status === 'on_track' || d.status === 'behind' || d.status === 'watch')
-      ? { cls: d.status === 'on_track' ? 'good' : d.status === 'behind' ? 'bad' : 'warn', label: d.status === 'on_track' ? 'On Track' : d.status === 'behind' ? 'Behind' : 'Watch' }
-      : classifyStatus(d.delivered, d.projected);
-    const diff = (d.delivered !== null && d.projected !== null) ? (d.delivered - d.projected) : null;
-    const diffStr = diff === null ? '—' : (diff >= 0 ? '+' : '') + (Math.round(diff*10)/10) + '%';
-    const diffCls = diff === null ? 'neutral' : (diff >= 0 ? 'good' : 'bad');
-    const barColor = status.cls === 'good' ? 'var(--green)' : status.cls === 'warn' ? '#f5c400' : 'var(--red)';
-    const dCls = status.cls === 'good' ? 'good' : status.cls === 'warn' ? 'warn' : 'bad';
-
+    const st = deptStatus(d);
+    const diff = (d.delivered !== null && d.projected !== null) ? d.delivered - d.projected : null;
     return `
-      <div class="dept-card ${status.cls} fade-up" style="animation-delay:${i*0.05}s" onclick="openDeptModal('${d.id}')">
+      <div class="dept-card ${st.cls} fade-up" style="animation-delay:${Math.min(i, 12) * 0.05}s" data-dept="${esc(d.id)}" role="button" tabindex="0">
         <div class="dept-top">
-          <div><div class="dept-name">${escapeHtml(d.name)}</div><div class="dept-code">${escapeHtml(d.id)}</div></div>
-          <div class="dept-status-badge ${status.cls}">${status.label}</div>
+          <div><div class="dept-name">${esc(d.name)}</div><div class="dept-code">${esc(d.id)}</div></div>
+          <div class="dept-status-badge ${st.cls}">${st.label}</div>
         </div>
         <div class="dept-numbers">
-          <div><div class="dept-num-label">Delivered</div><div class="dept-num-val ${dCls}">${fmtPct(d.delivered)}</div></div>
+          <div><div class="dept-num-label">Delivered</div><div class="dept-num-val ${st.cls}">${fmtPct(d.delivered)}</div></div>
           <div><div class="dept-num-label">Projected</div><div class="dept-num-val neutral">${fmtPct(d.projected)}</div></div>
-          <div><div class="dept-num-label">Diff</div><div class="dept-num-val ${diffCls}">${diffStr}</div></div>
+          <div><div class="dept-num-label">vs Plan</div><div class="dept-num-val ${diff === null ? "neutral" : diff >= 0 ? "good" : "bad"}">${fmtDiff(diff)}</div></div>
         </div>
-        <div class="dept-bar-track"><div class="dept-bar-fill" style="width:${d.delivered ?? 0}%;background:${barColor}"></div></div>
+        <div class="dept-bar-track"><div class="dept-bar-fill" style="width:${clamp(d.delivered || 0, 0, 100)}%;background:${STATUS_COLOR[st.cls]}"></div></div>
       </div>`;
-  }).join('');
+  }).join("");
 }
 
 function renderEpisodeRows(episodes) {
-  if (!episodes.length) return '<div class="ep-row"><span style="color:var(--muted)">No episodes found</span></div>';
+  if (!episodes.length) return `<div class="ep-row ep-empty"><span class="empty-note">No episodes to show yet.</span></div>`;
   return episodes.map(ep => {
-    const status = classifyStatus(ep.delivered, ep.projected);
-    const diff = (ep.delivered !== null && ep.projected !== null) ? (ep.delivered - ep.projected) : null;
-    const diffStr = diff === null ? '—' : (diff >= 0 ? '+' : '') + (Math.round(diff*10)/10) + '%';
-    const diffCls = diff === null ? 'neutral' : (diff >= 0 ? 'good' : 'bad');
-    const barColor = status.cls === 'good' ? 'var(--green)' : status.cls === 'warn' ? '#f5c400' : 'var(--red)';
-    const diffPillCls = ep.difficulty === 'HIGH' ? 'bad' : ep.difficulty === 'MID' ? 'warn' : 'good';
-
+    const st = classify(ep.delivered, ep.projected);
+    const diff = (ep.delivered !== null && ep.projected !== null) ? ep.delivered - ep.projected : null;
     return `
-      <div class="ep-row" onclick="openEpModal('${escapeAttr(ep.id)}')">
-        <span class="ep-name">${escapeHtml(ep.id)}</span>
-        <span><div class="ep-diff-pill ${diffPillCls}">${escapeHtml(ep.difficulty || '—')}</div></span>
+      <div class="ep-row" data-ep="${esc(ep.id)}" role="button" tabindex="0">
+        <span class="ep-name">${esc(ep.id)}</span>
+        <span class="ep-col-diffic"><div class="ep-diff-pill ${difficultyCls(ep.difficulty)}">${esc(ep.difficulty || "—")}</div></span>
         <div class="ep-bar-wrap">
-          <div class="ep-bar-track"><div class="ep-bar-fill" style="width:${ep.delivered ?? 0}%;background:${barColor}"></div></div>
+          <div class="ep-bar-track"><div class="ep-bar-fill" style="width:${clamp(ep.delivered || 0, 0, 100)}%;background:${STATUS_COLOR[st.cls]}"></div></div>
           <span class="ep-pct">${fmtPct(ep.delivered)}</span>
         </div>
-        <span class="ep-num neutral" style="text-align:right">${fmtNum(ep.tasksDone)}</span>
-        <span class="ep-num neutral" style="text-align:right">${fmtNum(ep.tasksTotal)}</span>
-        <span class="ep-num ${diffCls}" style="text-align:right">${diffStr}</span>
+        <span class="ep-num neutral ep-col-tasks" style="text-align:right">${fmtNum(ep.tasksDone)}</span>
+        <span class="ep-num neutral ep-col-tasks" style="text-align:right">${fmtNum(ep.tasksTotal)}</span>
+        <span class="ep-num ${diff === null ? "neutral" : diff >= 0 ? "good" : "bad"}" style="text-align:right">${fmtDiff(diff)}</span>
       </div>`;
-  }).join('');
+  }).join("");
 }
 
-// ════════════════════════════════════════════════════════════
-// SCHEDULE / GANTT
-// ════════════════════════════════════════════════════════════
-
-// Color mapping by process name (case-insensitive substring match)
+// ─── Schedule (Gantt) ───────────────────────────────────────
 const PROCESS_COLORS = [
-  { match: /story\s*board|^stb$/i,           color: '#7ed957' }, // light green
-  { match: /^art|^clr|color/i,                color: '#f58220' }, // orange
-  { match: /rig/i,                            color: '#f5c400' }, // yellow
-  { match: /background|^bg/i,                 color: '#00b8d4' }, // teal
-  { match: /animation|^ani|^2da/i,            color: '#00c271' }, // green
-  { match: /fx|^2dfx|^2fx/i,                  color: '#3a7bd5' }, // blue
-  { match: /comp/i,                           color: '#d63eb4' }, // magenta
-  { match: /render/i,                         color: '#5a6070' }, // gray
+  [/story\s*board|^stb$|^sb$/i, "#7ed957"],
+  [/^art|^clr|color/i,          "#f58220"],
+  [/rig/i,                      "#f5c400"],
+  [/background|^bg/i,           "#00b8d4"],
+  [/animation|^ani|^2da/i,      "#00c271"],
+  [/fx/i,                       "#3a7bd5"],
+  [/comp/i,                     "#d63eb4"],
+  [/render/i,                   "#5a6070"],
 ];
-function colorForProcess(procName) {
-  for (const m of PROCESS_COLORS) if (m.match.test(procName)) return m.color;
-  // Fallback: deterministic color from process name
-  let hash = 0;
-  for (let i = 0; i < procName.length; i++) hash = procName.charCodeAt(i) + ((hash << 5) - hash);
-  const palette = ['#f58220','#f5c400','#00b8d4','#00c271','#3a7bd5','#d63eb4','#7ed957','#5a6070'];
-  return palette[Math.abs(hash) % palette.length];
+const FALLBACK_COLORS = ["#8e6fd8", "#e0607e", "#2bb3a3", "#c98a1b", "#5b8def", "#7a8799"];
+function colorForProcess(name) {
+  for (const [re, color] of PROCESS_COLORS) if (re.test(name)) return color;
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return FALLBACK_COLORS[Math.abs(h) % FALLBACK_COLORS.length];
 }
-
-// Get the Monday (start of ISO week) of a given date
-function startOfWeek(d) {
-  const x = new Date(d);
-  const day = x.getDay();
-  const diff = x.getDate() - day + (day === 0 ? -6 : 1); // Monday
-  x.setDate(diff);
-  x.setHours(0,0,0,0);
-  return x;
-}
-function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return x; }
-function diffDays(a, b) { return Math.round((b - a) / (1000*60*60*24)); }
-function fmtShortDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
-function fmtFullDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
 
 function renderSchedule(schedule) {
   if (!schedule || !schedule.length) {
-    return `
-      <div class="schedule-card">
-        <div class="section-header"><div class="section-title">Production Schedule</div></div>
-        <div class="gantt-empty">No schedule data available. Add a SCHEDULE_DATA sheet with columns: episode, process, start_date, due_date, take1, take2, ...</div>
-      </div>`;
+    return `<div class="schedule-card"><div class="section-header"><div class="section-title">Production Schedule</div></div>
+      <div class="gantt-empty">The production schedule is not available yet.</div></div>`;
   }
-
-  // Compute date range across the entire schedule
   let minDate = schedule[0].start, maxDate = schedule[0].due;
   schedule.forEach(s => {
     if (s.start < minDate) minDate = s.start;
     if (s.due > maxDate) maxDate = s.due;
-    s.takes.forEach(t => { if (t.date > maxDate) maxDate = t.date; });
+    s.takes.forEach(t => { if (t.date > maxDate) maxDate = t.date; if (t.date < minDate) minDate = t.date; });
   });
-
-  // Round to weeks
   const weekStart = startOfWeek(minDate);
-  const weekEnd = startOfWeek(addDays(maxDate, 7)); // include the week after max
-  const totalWeeks = Math.max(1, diffDays(weekStart, weekEnd) / 7);
+  const totalWeeks = Math.max(1, diffDays(weekStart, startOfWeek(maxDate)) / 7 + 1);
   const totalDays = totalWeeks * 7;
+  const pos = days => (days / totalDays) * 100;
 
-  // Build week header columns
-  const weeks = [];
-  for (let i = 0; i < totalWeeks; i++) {
-    const wkStart = addDays(weekStart, i * 7);
-    weeks.push({ num: i + 1, date: wkStart });
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayPos = diffDays(weekStart, today) + 0.5;           // middle of today
+  const showToday = todayPos >= 0 && todayPos <= totalDays;
+
+  const byEp = new Map();
+  schedule.forEach(s => { if (!byEp.has(s.episode)) byEp.set(s.episode, []); byEp.get(s.episode).push(s); });
+  const epIds = [...byEp.keys()];
+
+  if (!state.collapsed) {
+    // First view: open the episode in production today (or the first one).
+    const active = epIds.find(id => byEp.get(id).some(r => r.start <= today && r.due >= today)) || epIds[0];
+    state.collapsed = new Set(epIds.filter(id => id !== active));
   }
 
-  // Today position
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const todayDays = diffDays(weekStart, today);
-  const todayPct = (todayDays / totalDays) * 100;
-  const showTodayLine = todayPct >= 0 && todayPct <= 100;
+  const labelCol = window.innerWidth < 700 ? 116 : 180;
+  const weekCells = Array.from({ length: totalWeeks }, (_, i) => {
+    const d = addDays(weekStart, i * 7);
+    const current = showToday && todayPos >= i * 7 && todayPos < (i + 1) * 7;
+    return `<div class="gantt-week-cell ${current ? "current" : ""}"><div class="gantt-week-num">WK ${i + 1}</div><div class="gantt-week-date">${fmtShortDate(d)}</div></div>`;
+  }).join("");
 
-  // Group by episode
-  const byEpisode = {};
-  schedule.forEach(s => {
-    if (!byEpisode[s.episode]) byEpisode[s.episode] = [];
-    byEpisode[s.episode].push(s);
-  });
-  const episodeIds = Object.keys(byEpisode);
-
-  // Layout columns: process label (180px) + week cells
-  const labelCol = 180;
-  const minWeekW = 60;
-  const totalWidth = labelCol + (totalWeeks * minWeekW);
-
-  // Find which episode has activity today (default expanded)
-  let activeEpisode = null;
-  for (const ep of episodeIds) {
-    const rows = byEpisode[ep];
-    if (rows.some(r => r.start <= today && r.due >= today)) { activeEpisode = ep; break; }
-  }
-  if (!activeEpisode) activeEpisode = episodeIds[0];
-
-  // Week header HTML
-  const weekHeaderCells = weeks.map(w =>
-    `<div class="gantt-week-cell" style="grid-column:span 1">
-       <div class="gantt-week-num">WK ${w.num}</div>
-       <div class="gantt-week-date">${fmtShortDate(w.date)}</div>
-     </div>`
-  ).join('');
-
-  // Episode blocks
-  const episodeBlocks = episodeIds.map(epId => {
-    const rows = byEpisode[epId];
-    const isCollapsed = epId !== activeEpisode;
-    const epStart = rows.reduce((min, r) => r.start < min ? r.start : min, rows[0].start);
-    const epDue = rows.reduce((max, r) => r.due > max ? r.due : max, rows[0].due);
-
-    const processRows = rows.map(r => {
-      const startDays = diffDays(weekStart, r.start);
-      const endDays = diffDays(weekStart, r.due);
-      const leftPct = (startDays / totalDays) * 100;
-      const widthPct = ((endDays - startDays) / totalDays) * 100;
+  const blocks = epIds.map(id => {
+    const rows = byEp.get(id);
+    const collapsed = state.collapsed.has(id);
+    const epStart = rows.reduce((a, r) => (r.start < a ? r.start : a), rows[0].start);
+    const epDue = rows.reduce((a, r) => (r.due > a ? r.due : a), rows[0].due);
+    const rowsHtml = rows.map(r => {
+      const s = diffDays(weekStart, r.start), e = diffDays(weekStart, r.due) + 1;   // the due day is included
       const color = colorForProcess(r.process);
-
-      // progress within bar (today position relative to bar)
-      let progressPct = 0;
-      if (today >= r.start && today <= r.due) {
-        progressPct = ((today - r.start) / (r.due - r.start)) * 100;
-      } else if (today > r.due) {
-        progressPct = 100;
-      }
-
-      const takeMarks = r.takes.map(t => {
-        const tDays = diffDays(weekStart, t.date);
-        const tPct = (tDays / totalDays) * 100;
-        return `
-          <div class="gantt-take" style="left:${tPct}%;border-color:${color};">
-            <div class="gantt-take-tooltip" style="transform:translateX(-50%) rotate(-45deg);">Take ${t.num} — ${fmtFullDate(t.date)}</div>
-          </div>`;
-      }).join('');
-
+      const elapsed = clamp((todayPos - s) / (e - s), 0, 1) * 100;
+      const takes = r.takes.map(t => `
+        <div class="gantt-take" style="left:${pos(diffDays(weekStart, t.date) + 0.5)}%;--c:${color}" tabindex="0" aria-label="Take ${t.num}, ${fmtFullDate(t.date)}">
+          <i></i><div class="gantt-tip">Take ${t.num} — ${fmtFullDate(t.date)}</div>
+        </div>`).join("");
       return `
         <div class="gantt-row" style="grid-template-columns:${labelCol}px 1fr;">
-          <div class="gantt-process-label">${escapeHtml(r.process)}</div>
-          <div class="gantt-track" style="position:relative;">
-            <div class="gantt-bar" style="left:${leftPct}%;width:${widthPct}%;background:${color};">
-              <div class="gantt-bar-progress" style="width:${progressPct}%;"></div>
-              <div class="gantt-bar-tooltip">${escapeHtml(r.process)} · ${fmtShortDate(r.start)} → ${fmtShortDate(r.due)}</div>
+          <div class="gantt-process-label" title="${esc(r.process)}">${esc(r.process)}</div>
+          <div class="gantt-track">
+            <div class="gantt-bar" style="left:${pos(s)}%;width:${pos(e - s)}%;background:${color};">
+              <div class="gantt-bar-progress" style="width:${elapsed}%;"></div>
+              <div class="gantt-tip">${esc(r.process)} · ${fmtShortDate(r.start)} → ${fmtShortDate(r.due)}</div>
             </div>
-            ${takeMarks}
+            ${takes}
           </div>
         </div>`;
-    }).join('');
-
+    }).join("");
     return `
-      <div class="gantt-episode-header ${isCollapsed ? 'collapsed' : ''}" data-ep="${escapeAttr(epId)}" onclick="toggleEpisode(this)">
-        <svg class="gantt-chevron" viewBox="0 0 16 16" fill="none">
-          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="gantt-episode-name">${escapeHtml(epId)}</div>
-        <div class="gantt-episode-meta">${rows.length} processes · ${fmtShortDate(epStart)} → ${fmtShortDate(epDue)}</div>
+      <div class="gantt-episode-header ${collapsed ? "collapsed" : ""}" data-gantt-ep="${esc(id)}" role="button" tabindex="0" aria-expanded="${!collapsed}">
+        <svg class="gantt-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="gantt-episode-name">${esc(id)}</div>
+        <div class="gantt-episode-meta">${rows.length} ${rows.length === 1 ? "process" : "processes"} · ${fmtShortDate(epStart)} → ${fmtShortDate(epDue)}</div>
       </div>
-      <div class="gantt-episode-rows ${isCollapsed ? 'collapsed' : ''}" style="max-height:${isCollapsed ? '0' : (rows.length * 40 + 20) + 'px'};">
-        ${processRows}
-      </div>`;
-  }).join('');
-
-  // Today line container offset: labelCol px + percentage of remaining width
-  const todayLineLeft = `calc(${labelCol}px + ${todayPct}% * (100% - ${labelCol}px) / 100%)`;
+      <div class="gantt-episode-rows ${collapsed ? "collapsed" : ""}">${rowsHtml}</div>`;
+  }).join("");
 
   return `
-    <div class="schedule-card">
+    <div class="schedule-card fade-up">
       <div class="section-header">
         <div class="section-title">Production Schedule</div>
         <div class="schedule-controls">
-          <button class="schedule-toggle-btn" onclick="toggleAllEpisodes(true)">Expand all</button>
-          <button class="schedule-toggle-btn" onclick="toggleAllEpisodes(false)">Collapse all</button>
+          <div class="gantt-key"><span class="gantt-key-take"></span>Take (delivery)</div>
+          ${showToday ? `<div class="gantt-key"><span class="gantt-key-today"></span>Today</div>` : ""}
+          ${epIds.length > 1 ? `<button class="schedule-toggle-btn" data-gantt-all="expand">Expand all</button><button class="schedule-toggle-btn" data-gantt-all="collapse">Collapse all</button>` : ""}
         </div>
       </div>
       <div class="gantt-wrap">
-        <div class="gantt-grid" style="min-width:${totalWidth}px;">
-          <div class="gantt-weeks-row" style="grid-template-columns:${labelCol}px repeat(${totalWeeks}, 1fr);">
-            <div></div>
-            ${weekHeaderCells}
-          </div>
-          <div style="position:relative;">
-            ${showTodayLine ? `
-              <div class="gantt-today-line" style="left:calc(${labelCol}px + (100% - ${labelCol}px) * ${todayPct/100}); top: 18px;"></div>
-            ` : ''}
-            ${episodeBlocks}
+        <div class="gantt-grid" style="min-width:${labelCol + totalWeeks * 60}px;">
+          <div class="gantt-weeks-row" style="grid-template-columns:${labelCol}px repeat(${totalWeeks}, 1fr);"><div></div>${weekCells}</div>
+          <div class="gantt-body">
+            ${showToday ? `<div class="gantt-today-line" style="left:calc(${labelCol}px + (100% - ${labelCol}px) * ${todayPos / totalDays});"></div>` : ""}
+            ${blocks}
           </div>
         </div>
       </div>
-    </div>
-  `;
-}
-
-function toggleEpisode(headerEl) {
-  const rows = headerEl.nextElementSibling;
-  const isCollapsed = headerEl.classList.toggle('collapsed');
-  rows.classList.toggle('collapsed', isCollapsed);
-  if (isCollapsed) {
-    rows.style.maxHeight = '0px';
-  } else {
-    rows.style.maxHeight = rows.scrollHeight + 'px';
-  }
-}
-
-function toggleAllEpisodes(expand) {
-  document.querySelectorAll('.gantt-episode-header').forEach(h => {
-    const rows = h.nextElementSibling;
-    if (expand) {
-      h.classList.remove('collapsed');
-      rows.classList.remove('collapsed');
-      rows.style.maxHeight = rows.scrollHeight + 'px';
-    } else {
-      h.classList.add('collapsed');
-      rows.classList.add('collapsed');
-      rows.style.maxHeight = '0px';
-    }
-  });
-}
-
-// ════════════════════════════════════════════════════════════
-// CHART
-// ════════════════════════════════════════════════════════════
-function renderChart(history) {
-  if (!history || !history.length) return '<p style="color:var(--muted);text-align:center;padding:40px">No history data</p>';
-
-  const W = 900, H = 170, padBottom = 24;
-  const usableH = H - padBottom - 10;
-  const n = history.length;
-  const xStep = n > 1 ? W / (n - 1) : W;
-
-  // Y scale: invert (100% = top)
-  const y = v => 10 + usableH * (1 - Math.min(100, Math.max(0, v))/100);
-
-  const delPath = history.map((h, i) => `${i===0?'M':'L'}${i*xStep},${y(h.delivered)}`).join(' ');
-  const projPath = history.map((h, i) => `${i===0?'M':'L'}${i*xStep},${y(h.projected)}`).join(' ');
-  const delArea = delPath + ` L${(n-1)*xStep},${H-padBottom} L0,${H-padBottom} Z`;
-
-  const dots = history.map((h, i) => `<circle cx="${i*xStep}" cy="${y(h.delivered)}" r="4" fill="var(--green)" stroke="#fff" stroke-width="2"/>`).join('');
-
-  // Show every Nth label depending on count
-  const labelEvery = Math.max(1, Math.floor(n / 12));
-  const labels = history.map((h, i) => {
-    if (i % labelEvery !== 0 && i !== n - 1) return '';
-    const isLast = i === n - 1;
-    return `<text x="${i*xStep}" y="${H - 6}" fill="#8a919e" font-size="10" font-family="Nunito Sans" font-weight="700" text-anchor="${i === 0 ? 'start' : isLast ? 'end' : 'middle'}">${escapeHtml(h.week)}${isLast ? ' ●' : ''}</text>`;
-  }).join('');
-
-  return `
-    <svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-      <line x1="0" y1="${y(25)}" x2="${W}" y2="${y(25)}" stroke="#e2e5ea" stroke-width="1"/>
-      <line x1="0" y1="${y(50)}" x2="${W}" y2="${y(50)}" stroke="#e2e5ea" stroke-width="1"/>
-      <line x1="0" y1="${y(75)}" x2="${W}" y2="${y(75)}" stroke="#e2e5ea" stroke-width="1"/>
-      <path d="${delArea}" fill="rgba(0,194,113,0.07)"/>
-      <path d="${projPath}" fill="none" stroke="var(--orange)" stroke-width="2" stroke-dasharray="6,5" opacity="0.5"/>
-      <path d="${delPath}" fill="none" stroke="var(--green)" stroke-width="3"/>
-      ${dots}
-      ${labels}
-    </svg>
-  `;
-}
-
-// ════════════════════════════════════════════════════════════
-// MODALS
-// ════════════════════════════════════════════════════════════
-function openEpModal(epId) {
-  const ep = __DATA__.episodes.find(e => e.id === epId);
-  if (!ep) return;
-  const status = classifyStatus(ep.delivered, ep.projected);
-  const diff = (ep.delivered !== null && ep.projected !== null) ? (ep.delivered - ep.projected) : null;
-  const diffStr = diff === null ? '—' : (diff >= 0 ? '+' : '') + (Math.round(diff*10)/10) + '%';
-  const diffCls = diff === null ? 'neutral' : (diff >= 0 ? 'good' : 'bad');
-  const diffPillCls = ep.difficulty === 'HIGH' ? 'bad' : ep.difficulty === 'MID' ? 'warn' : 'good';
-
-  document.getElementById('me-title').textContent = ep.id;
-  const dc = document.getElementById('me-diff-chip');
-  dc.textContent = ep.difficulty || '—';
-  dc.className = 'modal-ep-chip ' + diffPillCls;
-  const sc = document.getElementById('me-status-chip');
-  sc.textContent = status.label;
-  sc.className = 'modal-ep-chip ' + status.cls;
-
-  const pctEl = document.getElementById('me-pct');
-  pctEl.textContent = fmtPct(ep.delivered);
-  pctEl.className = 'modal-stat-val ' + (status.cls === 'good' ? 'good' : status.cls === 'bad' ? 'bad' : 'warn');
-
-  document.getElementById('me-proj-pct').textContent = fmtPct(ep.projected);
-  document.getElementById('me-tasks').textContent = (ep.tasksDone !== null && ep.tasksTotal !== null) ? `${fmtNum(ep.tasksDone)}/${fmtNum(ep.tasksTotal)}` : '—';
-
-  const dEl = document.getElementById('me-diff');
-  dEl.textContent = diffStr;
-  dEl.className = 'modal-stat-val ' + diffCls;
-
-  const container = document.getElementById('me-breakdown');
-  container.innerHTML = ep.depts.map(d => {
-    if (d.del === null && d.proj === null) return ''; // skip if no data
-    const ddiff = (d.del !== null && d.proj !== null) ? (d.del - d.proj) : null;
-    const cls = ddiff === null ? 'warn' : ddiff >= 0 ? 'good' : ddiff > -8 ? 'warn' : 'bad';
-    const barColor = cls === 'good' ? 'var(--green)' : cls === 'warn' ? '#f5c400' : 'var(--red)';
-    const ddiffStr = ddiff === null ? '—' : (ddiff >= 0 ? '+' : '') + (Math.round(ddiff*10)/10) + '%';
-    return `
-      <div class="dept-breakdown-row">
-        <div class="bd-name">${escapeHtml(d.name)}</div>
-        <div class="bd-bar-wrap">
-          <div class="bd-bar-bg"></div>
-          <div class="bd-bar-proj" style="width:${d.proj ?? 0}%"></div>
-          <div class="bd-bar-del" style="width:${d.del ?? 0}%;background:${barColor}"></div>
-        </div>
-        <div class="bd-pct ${cls}">${fmtPct(d.del)}</div>
-        <div class="bd-diff ${ddiff === null ? 'neutral' : ddiff >= 0 ? 'good' : 'bad'}">${ddiffStr}</div>
-      </div>`;
-  }).join('') || '<p style="color:var(--muted);font-size:12px;padding:12px">No department breakdown available</p>';
-
-  document.getElementById('modal-ep').classList.add('open');
-}
-
-function openDeptModal(deptId) {
-  const d = __DATA__.depts.find(x => x.id === deptId);
-  if (!d) return;
-  const status = (d.status === 'on_track' || d.status === 'behind' || d.status === 'watch')
-    ? { cls: d.status === 'on_track' ? 'good' : d.status === 'behind' ? 'bad' : 'warn', label: d.status === 'on_track' ? 'On Track' : d.status === 'behind' ? 'Behind' : 'Watch' }
-    : classifyStatus(d.delivered, d.projected);
-  const diff = (d.delivered !== null && d.projected !== null) ? (d.delivered - d.projected) : null;
-  const diffStr = diff === null ? '—' : (diff >= 0 ? '+' : '') + (Math.round(diff*10)/10) + '%';
-  const diffCls = diff === null ? 'neutral' : (diff >= 0 ? 'good' : 'bad');
-
-  document.getElementById('md-title').textContent = d.name;
-  document.getElementById('md-code').textContent = d.id;
-  const sc = document.getElementById('md-status-chip');
-  sc.textContent = status.label;
-  sc.className = 'modal-ep-chip ' + status.cls;
-
-  const dEl = document.getElementById('md-delivered');
-  dEl.textContent = fmtPct(d.delivered);
-  dEl.className = 'modal-stat-val ' + (status.cls === 'good' ? 'good' : status.cls === 'bad' ? 'bad' : 'warn');
-  document.getElementById('md-projected').textContent = fmtPct(d.projected);
-  const diEl = document.getElementById('md-diff');
-  diEl.textContent = diffStr;
-  diEl.className = 'modal-stat-val ' + diffCls;
-
-  document.getElementById('md-bar-del').style.width = (d.delivered ?? 0) + '%';
-  document.getElementById('md-bar-proj').style.width = (d.projected ?? 0) + '%';
-  document.getElementById('md-label-del').textContent = 'Delivered: ' + fmtPct(d.delivered);
-  document.getElementById('md-label-proj').textContent = 'Projected: ' + fmtPct(d.projected);
-
-  // Per-episode breakdown for this dept
-  const breakdown = document.getElementById('md-ep-breakdown');
-  breakdown.innerHTML = __DATA__.episodes.map(ep => {
-    const match = ep.depts.find(dd => dd.id === d.id);
-    if (!match || (match.del === null && match.proj === null)) return '';
-    const epdiff = (match.del !== null && match.proj !== null) ? (match.del - match.proj) : null;
-    const cls = epdiff === null ? 'warn' : epdiff >= 0 ? 'good' : epdiff > -8 ? 'warn' : 'bad';
-    const barColor = cls === 'good' ? 'var(--green)' : cls === 'warn' ? '#f5c400' : 'var(--red)';
-    const epdiffStr = epdiff === null ? '—' : (epdiff >= 0 ? '+' : '') + (Math.round(epdiff*10)/10) + '%';
-    return `
-      <div class="dept-breakdown-row">
-        <div class="bd-name">${escapeHtml(ep.id)}</div>
-        <div class="bd-bar-wrap">
-          <div class="bd-bar-bg"></div>
-          <div class="bd-bar-proj" style="width:${match.proj ?? 0}%"></div>
-          <div class="bd-bar-del" style="width:${match.del ?? 0}%;background:${barColor}"></div>
-        </div>
-        <div class="bd-pct ${cls}">${fmtPct(match.del)}</div>
-        <div class="bd-diff ${epdiff === null ? 'neutral' : epdiff >= 0 ? 'good' : 'bad'}">${epdiffStr}</div>
-      </div>`;
-  }).join('') || '<p style="color:var(--muted);font-size:12px;padding:12px">No episode data available</p>';
-
-  document.getElementById('modal-dept').classList.add('open');
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function switchTab(tab, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  el.classList.add('active');
-}
-
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
-
-// ════════════════════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════════════════════
-function escapeHtml(s) {
-  if (s === null || s === undefined) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function escapeAttr(s) { return escapeHtml(s).replace(/'/g, '&#39;'); }
-function formatDate(s) {
-  if (!s) return '—';
-  const str = String(s).trim();
-  // If it's a date string like "2026-04-26" or "4/26/2026"
-  const d = new Date(str);
-  if (!isNaN(d.getTime())) {
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-  return str;
-}
-
-// ════════════════════════════════════════════════════════════
-// MAIN
-// ════════════════════════════════════════════════════════════
-async function loadData() {
-  if (__LOAD_IN_PROGRESS__) {
-    console.log('[DASHBOARD] load already in progress, skipping');
-    return;
-  }
-  __LOAD_IN_PROGRESS__ = true;
-  try {
-    // Fetch each CSV independently — if one fails, others still load.
-    const safeFetch = async (url, label) => {
-      try {
-        const res = await fetchCSV(url);
-        console.log(`[FETCH ${label}]`, res ? `${res.length} rows` : 'no response');
-        return res;
-      } catch (e) {
-        console.error(`[FETCH ${label}] failed:`, e.message);
-        return null;
-      }
-    };
-
-    const [generalRows, deptRows, epRows, histRows, schedRows] = await Promise.all([
-      safeFetch(CONFIG.GENERAL_CSV,  'GENERAL'),
-      safeFetch(CONFIG.DEPT_CSV,     'DEPT'),
-      safeFetch(CONFIG.EPISODE_CSV,  'EPISODE'),
-      safeFetch(CONFIG.HISTORY_CSV,  'HISTORY'),
-      safeFetch(CONFIG.SCHEDULE_CSV, 'SCHEDULE'),
-    ]);
-
-    if (!generalRows && !deptRows && !epRows) {
-      showSetupInstructions();
-      return;
-    }
-
-    // Parse each section independently so a failure in one doesn't kill the rest.
-    let general = {}, depts = [], episodes = [], history = [], schedule = [];
-    try { general = parseGeneral(generalRows); } catch (e) { console.error('parseGeneral failed:', e); }
-    try { depts = parseDepts(deptRows); } catch (e) { console.error('parseDepts failed:', e); }
-    try { episodes = parseEpisodes(epRows, depts); } catch (e) { console.error('parseEpisodes failed:', e); }
-    try { history = parseHistory(histRows); } catch (e) { console.error('parseHistory failed:', e); }
-    try { schedule = parseSchedule(schedRows); } catch (e) { console.error('parseSchedule failed:', e); }
-
-    console.log('[DASHBOARD] data ready:', {
-      general: Object.keys(general).length,
-      depts: depts.length,
-      episodes: episodes.length,
-      history: history.length,
-      schedule: schedule.length,
-    });
-
-    render({ general, depts, episodes, history, schedule });
-  } catch (err) {
-    console.error(err);
-    document.getElementById('main-content').innerHTML = `
-      <div class="error-banner">
-        <strong>Error loading data.</strong><br>
-        ${escapeHtml(err.message)}<br>
-        Check that your Google Sheets CSV URLs are correct and the sheets are published to web.
-      </div>`;
-  } finally {
-    __LOAD_IN_PROGRESS__ = false;
-  }
-}
-
-function showSetupInstructions() {
-  document.getElementById('main-content').innerHTML = `
-    <div style="max-width:720px;margin:60px auto;background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:40px">
-      <div class="project-eyebrow" style="color:var(--orange);margin-bottom:8px">SETUP REQUIRED</div>
-      <h1 style="font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:20px">Connect Your Google Sheets</h1>
-      <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px">To connect this dashboard to your live data:</p>
-      <ol style="font-size:14px;line-height:1.9;padding-left:20px;color:var(--text)">
-        <li>Open your Google Sheet with the production data</li>
-        <li>Go to <strong>File → Share → Publish to web</strong></li>
-        <li>Choose each sheet (<code>GENERAL_DATA</code>, <code>DEPT_DATA</code>, <code>EPISODE_DATA</code>, <code>WEEKLY_HISTORY</code>) one by one as <strong>Comma-separated values (.csv)</strong></li>
-        <li>Copy each published URL</li>
-        <li>Paste them at the top of this HTML file in the <code>CONFIG</code> object</li>
-      </ol>
-      <p style="font-size:13px;color:var(--muted);margin-top:24px;padding-top:24px;border-top:1px solid var(--border)">The dashboard will refresh automatically every ${CONFIG.REFRESH_MINUTES} minutes once connected.</p>
     </div>`;
 }
 
-// Note: loadData() is called by unlockGate() after successful password entry.
+// ─── Weekly chart ───────────────────────────────────────────
+// Drawn at the real pixel width of its container, so text and dots are never stretched.
+function drawChart() {
+  const area = $("chart-area");
+  if (!area || !state.data) return;
+  const history = state.data.history;
+  if (!history.length) { area.innerHTML = `<p class="empty-note">No weekly history yet.</p>`; return; }
+
+  const weekCurrent = parseNum(state.data.general.weekcurrent);
+  const W = Math.max(280, Math.round(area.clientWidth)), H = 190;
+  const pad = { l: 38, r: 14, t: 12, b: 26 };
+  const n = history.length;
+  const x = i => pad.l + (n > 1 ? (i / (n - 1)) * (W - pad.l - pad.r) : (W - pad.l - pad.r) / 2);
+  const y = v => pad.t + (H - pad.t - pad.b) * (1 - clamp(v, 0, 100) / 100);
+
+  // "Delivered" stops at the current week; later rows are the plan, not results.
+  const hasNums = history.every(p => p.num !== null);
+  const isPast = p => !(hasNums && weekCurrent && p.num > weekCurrent);
+  const del = history.map((p, i) => ({ i, v: p.delivered, p })).filter(o => o.v !== null && isPast(o.p));
+  const proj = history.map((p, i) => ({ i, v: p.projected })).filter(o => o.v !== null);
+  const line = pts => pts.map((o, k) => `${k ? "L" : "M"}${x(o.i).toFixed(1)},${y(o.v).toFixed(1)}`).join(" ");
+  const base = H - pad.b;
+  const areaPath = del.length > 1 ? `${line(del)} L${x(del[del.length - 1].i).toFixed(1)},${base} L${x(del[0].i).toFixed(1)},${base} Z` : "";
+
+  const grid = [0, 25, 50, 75, 100].map(v => `
+    <line x1="${pad.l}" y1="${y(v)}" x2="${W - pad.r}" y2="${y(v)}" stroke="${v === 0 ? "#c4c9d2" : "#e2e5ea"}" stroke-width="1"/>
+    <text x="${pad.l - 8}" y="${y(v) + 3.5}" text-anchor="end" class="chart-tick">${v}%</text>`).join("");
+
+  const maxLabels = Math.max(2, Math.floor((W - pad.l - pad.r) / 56));
+  const step = Math.max(1, Math.ceil(n / maxLabels));
+  const labels = history.map((p, i) => {
+    if (i % step !== 0 && i !== n - 1) return "";
+    if (i !== n - 1 && n - 1 - i < step * 0.6) return "";        // keep clear of the last label
+    return `<text x="${x(i).toFixed(1)}" y="${H - 7}" text-anchor="${i === 0 && n > 1 ? "start" : i === n - 1 && n > 1 ? "end" : "middle"}" class="chart-tick">${esc(p.week)}</text>`;
+  }).join("");
+
+  const dots = (del.length <= 30 ? del : del.slice(-1)).map(o => `<circle cx="${x(o.i).toFixed(1)}" cy="${y(o.v).toFixed(1)}" r="4" fill="var(--green)" stroke="#fff" stroke-width="2"/>`).join("");
+
+  area.innerHTML = `
+    <svg class="chart" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Delivered versus projected progress by week">
+      ${grid}
+      ${areaPath ? `<path d="${areaPath}" fill="rgba(0,194,113,0.08)"/>` : ""}
+      ${proj.length > 1 ? `<path d="${line(proj)}" fill="none" stroke="var(--orange)" stroke-width="2" stroke-dasharray="6,5" opacity="0.7"/>` : ""}
+      ${del.length > 1 ? `<path d="${line(del)}" fill="none" stroke="var(--green)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>` : ""}
+      ${dots}
+      <line class="chart-guide" x1="0" x2="0" y1="${pad.t}" y2="${base}" stroke="#8a919e" stroke-width="1" stroke-dasharray="3,3" visibility="hidden"/>
+      ${labels}
+    </svg>
+    <div class="chart-tip" hidden></div>`;
+
+  const guide = area.querySelector(".chart-guide"), tip = area.querySelector(".chart-tip");
+  const show = evt => {
+    const rect = area.getBoundingClientRect();
+    const px = (evt.touches ? evt.touches[0].clientX : evt.clientX) - rect.left;
+    const i = clamp(Math.round(n > 1 ? ((px - pad.l) / (W - pad.l - pad.r)) * (n - 1) : 0), 0, n - 1);
+    const p = history[i], cx = x(i);
+    guide.setAttribute("x1", cx); guide.setAttribute("x2", cx); guide.setAttribute("visibility", "visible");
+    const d = isPast(p) ? p.delivered : null;
+    tip.innerHTML = `<b>${esc(p.week)}</b>` +
+      (d !== null ? `<span><i style="background:var(--green)"></i>Delivered ${fmtPct(d)}</span>` : "") +
+      (p.projected !== null ? `<span><i style="background:var(--orange)"></i>Projected ${fmtPct(p.projected)}</span>` : "");
+    tip.hidden = false;
+    const tw = tip.offsetWidth;
+    tip.style.left = clamp(cx - tw / 2, 0, W - tw) + "px";
+  };
+  const hide = () => { guide.setAttribute("visibility", "hidden"); tip.hidden = true; };
+  area.onmousemove = show; area.onmouseleave = hide;
+  area.ontouchstart = show; area.ontouchmove = show; area.ontouchend = hide;
+}
+
+// ─── Detail windows ─────────────────────────────────────────
+function breakdownRow(name, del, proj) {
+  if (del === null && proj === null) return "";
+  const diff = (del !== null && proj !== null) ? del - proj : null;
+  const st = classify(del, proj);
+  return `
+    <div class="dept-breakdown-row">
+      <div class="bd-name">${esc(name)}</div>
+      <div class="bd-bar-wrap">
+        <div class="bd-bar-bg"></div>
+        <div class="bd-bar-proj" style="width:${clamp(proj || 0, 0, 100)}%"></div>
+        <div class="bd-bar-del" style="width:${clamp(del || 0, 0, 100)}%;background:${STATUS_COLOR[st.cls]}"></div>
+      </div>
+      <div class="bd-pct ${st.cls}">${fmtPct(del)}</div>
+      <div class="bd-diff ${diff === null ? "neutral" : diff >= 0 ? "good" : "bad"}">${fmtDiff(diff)}</div>
+    </div>`;
+}
+function setStat(id, text, cls) { const el = $(id); el.textContent = text; el.className = "modal-stat-val " + cls; }
+function setChip(id, text, cls) { const el = $(id); el.textContent = text; el.className = "modal-ep-chip " + cls; }
+
+function openEpModal(id) {
+  const ep = state.data && state.data.episodes.find(e => e.id === id);
+  if (!ep) return;
+  const st = classify(ep.delivered, ep.projected);
+  const diff = (ep.delivered !== null && ep.projected !== null) ? ep.delivered - ep.projected : null;
+  $("me-title").textContent = ep.id;
+  setChip("me-diff-chip", ep.difficulty || "—", difficultyCls(ep.difficulty));
+  setChip("me-status-chip", st.label, st.cls);
+  setStat("me-pct", fmtPct(ep.delivered), st.cls);
+  setStat("me-proj-pct", fmtPct(ep.projected), "neutral");
+  setStat("me-tasks", (ep.tasksDone !== null && ep.tasksTotal !== null) ? `${fmtNum(ep.tasksDone)}/${fmtNum(ep.tasksTotal)}` : "—", "neutral");
+  setStat("me-diff", fmtDiff(diff), diff === null ? "neutral" : diff >= 0 ? "good" : "bad");
+  $("me-breakdown").innerHTML = ep.depts.map(d => breakdownRow(d.name, d.del, d.proj)).join("") ||
+    `<p class="empty-note">No department breakdown for this episode yet.</p>`;
+  $("modal-ep").classList.add("open");
+}
+
+function openDeptModal(id) {
+  const d = state.data && state.data.depts.find(x => x.id === id);
+  if (!d) return;
+  const st = deptStatus(d);
+  const diff = (d.delivered !== null && d.projected !== null) ? d.delivered - d.projected : null;
+  $("md-title").textContent = d.name;
+  $("md-code").textContent = d.id;
+  setChip("md-status-chip", st.label, st.cls);
+  setStat("md-delivered", fmtPct(d.delivered), st.cls);
+  setStat("md-projected", fmtPct(d.projected), "neutral");
+  setStat("md-diff", fmtDiff(diff), diff === null ? "neutral" : diff >= 0 ? "good" : "bad");
+  $("md-bar-del").style.width = clamp(d.delivered || 0, 0, 100) + "%";
+  $("md-bar-proj").style.width = clamp(d.projected || 0, 0, 100) + "%";
+  $("md-label-del").textContent = "Delivered: " + fmtPct(d.delivered);
+  $("md-label-proj").textContent = "Projected: " + fmtPct(d.projected);
+  $("md-ep-breakdown").innerHTML = state.data.episodes.map(ep => {
+    const m = ep.depts.find(x => x.id === d.id);
+    return m ? breakdownRow(ep.id, m.del, m.proj) : "";
+  }).join("") || `<p class="empty-note">No episode breakdown for this department yet.</p>`;
+  $("modal-dept").classList.add("open");
+}
+function closeModal(id) { $(id).classList.remove("open"); }
+
+// ════════════════════════════════════════════════════════════
+// EVENTS — one listener; sheet values never end up inside inline handlers
+// ════════════════════════════════════════════════════════════
+function handleAction(target) {
+  const el = target.closest("[data-retry],[data-tab],[data-dept],[data-ep],[data-gantt-ep],[data-gantt-all]");
+  if (!el) return false;
+  const ds = el.dataset;
+  if ("retry" in ds) {
+    $("main-content").innerHTML = state.skeleton;
+    loadData();
+  } else if (ds.tab) {
+    state.tab = ds.tab;
+    document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === ds.tab));
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.toggle("active", t.id === "tab-" + ds.tab));
+  } else if (ds.dept !== undefined) {
+    openDeptModal(ds.dept);
+  } else if (ds.ep !== undefined) {
+    openEpModal(ds.ep);
+  } else if (ds.ganttEp !== undefined) {
+    const collapsed = !state.collapsed.has(ds.ganttEp);
+    if (collapsed) state.collapsed.add(ds.ganttEp); else state.collapsed.delete(ds.ganttEp);
+    el.classList.toggle("collapsed", collapsed);
+    el.setAttribute("aria-expanded", String(!collapsed));
+    el.nextElementSibling.classList.toggle("collapsed", collapsed);
+  } else if (ds.ganttAll) {
+    const collapse = ds.ganttAll === "collapse";
+    document.querySelectorAll(".gantt-episode-header").forEach(h => {
+      if (collapse) state.collapsed.add(h.dataset.ganttEp); else state.collapsed.delete(h.dataset.ganttEp);
+      h.classList.toggle("collapsed", collapse);
+      h.setAttribute("aria-expanded", String(!collapse));
+      h.nextElementSibling.classList.toggle("collapsed", collapse);
+    });
+  }
+  return true;
+}
+
+document.addEventListener("click", e => {
+  if (e.target.classList && e.target.classList.contains("modal-overlay")) { e.target.classList.remove("open"); return; }
+  handleAction(e.target);
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
+  if ((e.key === "Enter" || e.key === " ") && e.target.getAttribute && e.target.getAttribute("role") === "button") {
+    e.preventDefault();
+    handleAction(e.target);
+  }
+});
+let resizeTimer = null;
+window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(drawChart, 150); });
+
+// ════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════
+state.skeleton = $("main-content").innerHTML;
+$("gate-btn").addEventListener("click", attemptLogin);
+$("gate-input").addEventListener("keydown", e => { if (e.key === "Enter") attemptLogin(); });
+let alreadyIn = false;
+try { alreadyIn = sessionStorage.getItem(STORAGE_KEY) === "1"; } catch (e) {}
+if (alreadyIn) unlockGate();
 </script>
 </body>
 </html>
